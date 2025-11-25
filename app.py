@@ -5,7 +5,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Crypto Signals", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
 
-# CSS with Deep Purple theme
+# CSS with 3D Effects & Lighter Theme
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -16,8 +16,9 @@ st.markdown("""
     
     #MainMenu, footer, header {visibility: hidden;}
     
+    /* Main background - LIGHTER */
     .stApp {
-        background: #0D1117 !important;
+        background: linear-gradient(135deg, #1a2332 0%, #253447 100%) !important;
     }
     
     .main .block-container {
@@ -27,172 +28,283 @@ st.markdown("""
     
     /* Sidebar */
     [data-testid="stSidebar"] {
-        background: #161B22 !important;
+        background: rgba(30, 41, 59, 0.7) !important;
+        backdrop-filter: blur(10px) !important;
         width: 80px !important;
         min-width: 80px !important;
-        border-right: 1px solid rgba(209, 213, 219, 0.1) !important;
+        border-right: 1px solid rgba(148, 163, 184, 0.2) !important;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
     }
     
     /* Headers */
     h1 {
         font-size: 2rem !important;
-        font-weight: 600 !important;
-        color: #F9FAFB !important;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
         margin: 0 0 0.5rem 0 !important;
         letter-spacing: -0.02em !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
     }
     
     h2 {
         font-size: 0.8125rem !important;
         font-weight: 600 !important;
-        color: #D1D5DB !important;
+        color: #CBD5E1 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.1em !important;
         margin: 2.5rem 0 1.25rem 0 !important;
     }
     
-    /* Metric cards */
+    /* Metric cards - 3D EFFECT */
     [data-testid="stMetric"] {
-        background: #1F2937 !important;
+        background: linear-gradient(145deg, #2d3e52 0%, #1e2a3a 100%) !important;
         padding: 2rem 1.75rem !important;
-        border-radius: 16px !important;
-        border: 1px solid rgba(209, 213, 219, 0.1) !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-        transition: all 0.2s ease !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 1px 0 rgba(255, 255, 255, 0.1) inset,
+            0 -1px 0 rgba(0, 0, 0, 0.3) inset !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    [data-testid="stMetric"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3B82F6, #06B6D4, #10B981);
+        opacity: 0;
+        transition: opacity 0.3s;
     }
     
     [data-testid="stMetric"]:hover {
-        border-color: rgba(129, 140, 248, 0.4) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(-8px) scale(1.02) !important;
+        box-shadow: 
+            0 20px 50px rgba(0, 0, 0, 0.6),
+            0 2px 0 rgba(255, 255, 255, 0.15) inset,
+            0 0 30px rgba(59, 130, 246, 0.3) !important;
+        border-color: rgba(59, 130, 246, 0.5) !important;
+    }
+    
+    [data-testid="stMetric"]:hover::before {
+        opacity: 1;
     }
     
     [data-testid="stMetricLabel"] {
         font-size: 0.6875rem !important;
         font-weight: 700 !important;
-        color: #D1D5DB !important;
+        color: #94A3B8 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         margin-bottom: 0.875rem !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
     
     [data-testid="stMetricValue"] {
         font-size: 2.5rem !important;
-        font-weight: 700 !important;
-        color: #F9FAFB !important;
+        font-weight: 800 !important;
+        color: #FFFFFF !important;
         line-height: 1.1 !important;
+        text-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(59, 130, 246, 0.3) !important;
     }
     
     [data-testid="stMetricDelta"] {
         font-size: 0.875rem !important;
         font-weight: 600 !important;
         margin-top: 0.625rem !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
     
-    /* Chart containers */
+    /* Chart containers - GLASSMORPHISM + 3D */
     .chart-box {
-        background: #1F2937 !important;
-        border-radius: 16px !important;
-        padding: 1.75rem !important;
-        border: 1px solid rgba(209, 213, 219, 0.1) !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 20px !important;
+        padding: 2rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
         margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chart-box::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
     
     .chart-title {
-        font-size: 0.9375rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: #F9FAFB;
+        color: #F8FAFC;
         margin-bottom: 1.25rem;
         letter-spacing: -0.01em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
     .js-plotly-plot {
         background: transparent !important;
     }
     
-    /* Dataframes */
+    /* Dataframes - 3D EFFECT */
     .stDataFrame {
-        border: 1px solid rgba(209, 213, 219, 0.1) !important;
-        border-radius: 12px !important;
-        background: #1F2937 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
+        box-shadow: 
+            0 8px 20px rgba(0, 0, 0, 0.4),
+            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+        overflow: hidden !important;
     }
     
     .stDataFrame thead tr th {
-        background: #161B22 !important;
-        color: #D1D5DB !important;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+        color: #CBD5E1 !important;
         font-weight: 700 !important;
         font-size: 0.6875rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         padding: 1rem !important;
-        border-bottom: 1px solid rgba(209, 213, 219, 0.1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
     }
     
     .stDataFrame tbody tr {
-        background: #1F2937 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+        background: rgba(30, 42, 58, 0.5) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        transition: all 0.2s ease !important;
     }
     
     .stDataFrame tbody tr:hover {
-        background: #161B22 !important;
+        background: rgba(45, 62, 82, 0.8) !important;
+        transform: translateX(2px) !important;
     }
     
     .stDataFrame tbody tr td {
-        color: #F9FAFB !important;
+        color: #F8FAFC !important;
         padding: 0.875rem 1rem !important;
         font-size: 0.875rem !important;
         font-weight: 500 !important;
     }
     
-    /* Buttons */
+    /* Buttons - 3D RAISED */
     .stButton button {
-        background: linear-gradient(135deg, #818CF8 0%, #2DD4BF 100%) !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
         color: white !important;
         border: none !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         padding: 0.75rem 1.5rem !important;
         font-weight: 600 !important;
         font-size: 0.875rem !important;
-        box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4) !important;
+        box-shadow: 
+            0 6px 20px rgba(59, 130, 246, 0.4),
+            0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+        transition: all 0.2s ease !important;
+        position: relative !important;
     }
     
-    /* Select boxes */
+    .stButton button:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 
+            0 10px 30px rgba(59, 130, 246, 0.5),
+            0 1px 0 rgba(255, 255, 255, 0.3) inset !important;
+    }
+    
+    .stButton button:active {
+        transform: translateY(-1px) !important;
+        box-shadow: 
+            0 4px 15px rgba(59, 130, 246, 0.4),
+            0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+    }
+    
+    /* Select boxes - ELEVATED */
     .stSelectbox > div > div,
     .stMultiSelect > div > div {
-        background: #1F2937 !important;
-        border: 1px solid rgba(209, 213, 219, 0.1) !important;
-        border-radius: 10px !important;
-        color: #F9FAFB !important;
+        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 12px !important;
+        color: #F8FAFC !important;
+        box-shadow: 
+            0 4px 15px rgba(0, 0, 0, 0.3),
+            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
     }
     
-    /* Info */
+    /* Info boxes - GLASS EFFECT */
     .stInfo {
-        background: rgba(129, 140, 248, 0.2) !important;
-        border: 1px solid rgba(129, 140, 248, 0.4) !important;
-        border-radius: 10px !important;
-        color: #F9FAFB !important;
+        background: rgba(59, 130, 246, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 12px !important;
+        color: #F8FAFC !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
     
-    /* Divider */
+    /* Divider - GLOWING */
     hr {
         border: none !important;
-        height: 1px !important;
-        background: rgba(209, 213, 219, 0.1) !important;
+        height: 2px !important;
+        background: linear-gradient(
+            90deg, 
+            transparent, 
+            rgba(59, 130, 246, 0.5) 20%,
+            rgba(59, 130, 246, 0.8) 50%,
+            rgba(59, 130, 246, 0.5) 80%,
+            transparent
+        ) !important;
         margin: 3rem 0 !important;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
     }
     
+    /* Scrollbar - MODERN */
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 10px;
+        height: 10px;
     }
     
     ::-webkit-scrollbar-track {
-        background: #0D1117;
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 10px;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: #1F2937;
-        border-radius: 4px;
+        background: linear-gradient(135deg, #3B82F6, #2563EB);
+        border-radius: 10px;
+        border: 2px solid rgba(30, 41, 59, 0.5);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    }
+    
+    /* Floating animation for metrics */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    /* Gradient text for numbers */
+    [data-testid="stMetricValue"] {
+        background: linear-gradient(135deg, #FFFFFF 0%, #E0E7FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -233,7 +345,7 @@ with col1:
     st.markdown("# Dashboard")
 with col2:
     last = df['Timestamp'].max()
-    st.markdown(f"<p style='color: #D1D5DB; font-size: 0.875rem; text-align: right;'>Updated {last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color: #CBD5E1; font-size: 0.875rem; text-align: right;'>Updated {last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
 
 # Filters
 col1, col2, col3 = st.columns([2, 1, 1])
@@ -295,10 +407,10 @@ with col1:
         values=result_counts.values,
         hole=0.6,
         marker=dict(
-            colors=['#818CF8', '#4ADE80', '#FB7185', '#FBBF24', '#A78BFA'],
-            line=dict(color='#0D1117', width=3)
+            colors=['#3B82F6', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6'],
+            line=dict(color='#1a2332', width=3)
         ),
-        textfont=dict(size=14, color='white', family='Inter'),
+        textfont=dict(size=14, color='white', family='Inter', weight=600),
         textposition='outside',
         textinfo='label+percent'
     )])
@@ -307,14 +419,16 @@ with col1:
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F9FAFB', family='Inter'),
+        font=dict(color='#F8FAFC', family='Inter'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280,
         annotations=[dict(
-            text=f'{total}<br><span style="font-size:14px; color:#D1D5DB;">signals</span>',
+            text=f'{total}<br><span style="font-size:14px; color:#CBD5E1;">signals</span>',
             x=0.5, y=0.5,
             font_size=32,
-            font_color='#F9FAFB',
+            font_color='#F8FAFC',
+            font_family='Inter',
+            font_weight=700,
             showarrow=False
         )]
     )
@@ -332,10 +446,10 @@ with col2:
     fig2.add_trace(go.Bar(
         x=side_stats['Side'],
         y=side_stats['Count'],
-        marker=dict(color=['#818CF8', '#2DD4BF'], line=dict(color='#0D1117', width=2)),
+        marker=dict(color=['#3B82F6', '#06B6D4'], line=dict(color='#1a2332', width=2)),
         text=side_stats['Count'],
         textposition='outside',
-        textfont=dict(size=14, color='#F9FAFB'),
+        textfont=dict(size=14, color='#F8FAFC', weight=600),
         yaxis='y'
     ))
     
@@ -343,16 +457,16 @@ with col2:
         x=side_stats['Side'],
         y=side_stats['Avg_PnL'],
         mode='lines+markers',
-        marker=dict(size=12, color='#4ADE80', line=dict(color='#F9FAFB', width=2)),
-        line=dict(width=3, color='#4ADE80'),
+        marker=dict(size=12, color='#10B981', line=dict(color='#F8FAFC', width=2)),
+        line=dict(width=3, color='#10B981'),
         yaxis='y2'
     ))
     
     fig2.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F9FAFB', family='Inter'),
-        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True),
+        font=dict(color='#F8FAFC', family='Inter'),
+        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True),
         yaxis2=dict(overlaying='y', side='right'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280,
@@ -378,16 +492,16 @@ if not completed.empty:
         y=daily['Cumulative'],
         mode='lines',
         fill='tozeroy',
-        line=dict(color='#818CF8', width=2.5),
-        fillcolor='rgba(129, 140, 248, 0.25)'
+        line=dict(color='#3B82F6', width=3),
+        fillcolor='rgba(59, 130, 246, 0.2)'
     ))
     
     fig3.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F9FAFB', family='Inter'),
-        xaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True),
-        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True, zeroline=True, zerolinecolor='rgba(251, 113, 133, 0.4)'),
+        font=dict(color='#F8FAFC', family='Inter'),
+        xaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True),
+        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True, zeroline=True, zerolinecolor='rgba(239, 68, 68, 0.5)'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280
     )
@@ -437,24 +551,24 @@ if not completed.empty:
     symbols['WR'] = (symbols['Wins'] / symbols['Count'] * 100).round(0)
     symbols = symbols.sort_values('Total', ascending=False).head(12)
     
-    colors = ['#4ADE80' if x > 0 else '#FB7185' for x in symbols['Total']]
+    colors = ['#10B981' if x > 0 else '#EF4444' for x in symbols['Total']]
     
     fig4 = go.Figure()
     fig4.add_trace(go.Bar(
         x=symbols['Symbol'],
         y=symbols['Total'],
-        marker=dict(color=colors, line=dict(color='#0D1117', width=2)),
+        marker=dict(color=colors, line=dict(color='#1a2332', width=2)),
         text=symbols['WR'].apply(lambda x: f"{x:.0f}%"),
         textposition='outside',
-        textfont=dict(size=12, color='#D1D5DB')
+        textfont=dict(size=12, color='#CBD5E1', weight=600)
     ))
     
     fig4.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F9FAFB', family='Inter'),
-        xaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)'),
-        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', zeroline=True, zerolinecolor='rgba(209, 213, 219, 0.2)'),
+        font=dict(color='#F8FAFC', family='Inter'),
+        xaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)'),
+        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', zeroline=True, zerolinecolor='rgba(255, 255, 255, 0.2)'),
         margin=dict(t=30, b=10, l=10, r=10),
         height=300,
         showlegend=False
@@ -485,4 +599,4 @@ st.dataframe(
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #D1D5DB; font-size: 0.8125rem;'>FlowBot Automation © 2025</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #CBD5E1; font-size: 0.8125rem;'>FlowBot Automation © 2025</p>", unsafe_allow_html=True)
