@@ -12,43 +12,209 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS מותאם אישית
+# CSS מתקדם - Dark Mode עם Neon/Glow Effects
 st.markdown("""
 <style>
+    /* Import fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    /* Global styles */
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Main background */
+    .stApp {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    
+    /* Remove default padding */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    /* Header styling */
     .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-align: left;
         margin-bottom: 2rem;
+        text-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
     }
-    .metric-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    /* Metric cards */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         padding: 1.5rem;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
+        border-radius: 16px;
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.1);
+        transition: all 0.3s ease;
     }
-    .stMetric {
-        background-color: #f0f2f6;
-        padding: 1rem;
+    
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        border-color: rgba(6, 182, 212, 0.5);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(6, 182, 212, 0.2);
+    }
+    
+    [data-testid="stMetricLabel"] {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    [data-testid="stMetricValue"] {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #06b6d4;
+        text-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+    }
+    
+    [data-testid="stMetricDelta"] {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        border-right: 1px solid rgba(6, 182, 212, 0.2);
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2 {
+        color: #06b6d4;
+        font-weight: 700;
+        text-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .stButton button:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+        box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
+        transform: translateY(-2px);
+    }
+    
+    /* Dataframe styling */
+    .stDataFrame {
+        background: #1e293b;
+        border-radius: 12px;
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        overflow: hidden;
+    }
+    
+    /* Divider */
+    hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), transparent);
+        margin: 2rem 0;
+    }
+    
+    /* Headers */
+    h3 {
+        color: #e2e8f0;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    }
+    
+    /* Info boxes */
+    .stInfo, .stSuccess, .stWarning {
+        background: #1e293b;
+        border-left: 4px solid #06b6d4;
         border-radius: 8px;
+    }
+    
+    /* Select boxes and inputs */
+    .stSelectbox, .stMultiSelect, .stDateInput {
+        background: #1e293b;
+    }
+    
+    .stSelectbox > div > div {
+        background-color: #334155;
+        border: 1px solid rgba(6, 182, 212, 0.3);
+        border-radius: 8px;
+        color: #e2e8f0;
+    }
+    
+    /* Plotly charts container */
+    .js-plotly-plot {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+        border-radius: 16px;
+        padding: 1rem;
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Custom metric card animation */
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px rgba(6, 182, 212, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.8); }
+    }
+    
+    /* Success/Positive values */
+    .positive {
+        color: #10b981;
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    
+    /* Negative values */
+    .negative {
+        color: #ef4444;
+        text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+    
+    /* Tabs styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 0.5rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent;
+        border-radius: 8px;
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# טעינת הדאטה - תומך בשתי שיטות
-@st.cache_data(ttl=300)  # Cache for 5 minutes
+# טעינת הדאטה
+@st.cache_data(ttl=300)
 def load_data():
-    """
-    טוען דאטה מגוגל שיטס או מקובץ CSV מקומי
-    """
     try:
-        # נסיון לטעון מגוגל שיטס
         sheet_url = st.secrets.get("GOOGLE_SHEET_URL", None)
         
         if sheet_url:
-            # המרת URL של שיטס לפורמט CSV
             if "/edit" in sheet_url:
                 sheet_url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
                 sheet_url = sheet_url.replace("/edit?usp=sharing", "/export?format=csv")
@@ -56,7 +222,6 @@ def load_data():
             df = pd.read_csv(sheet_url)
             st.sidebar.success("✅ מחובר לגוגל שיטס")
         else:
-            # fallback לקובץ מקומי
             df = pd.read_csv('Signals_Log_-_Sheet1.csv')
             st.sidebar.info("📁 קורא מקובץ מקומי")
     
@@ -64,11 +229,8 @@ def load_data():
         st.error(f"❌ שגיאה בטעינת הדאטה: {str(e)}")
         st.stop()
     
-    # המרת תאריכים
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
     df['Check_Date'] = pd.to_datetime(df['Check_Date'], errors='coerce')
-    
-    # ניקוי ערכים
     df['P&L_%'] = pd.to_numeric(df['P&L_%'], errors='coerce')
     df['Actual_RR'] = pd.to_numeric(df['Actual_RR'], errors='coerce')
     df['Confidence'] = pd.to_numeric(df['Confidence'], errors='coerce')
@@ -78,82 +240,71 @@ def load_data():
 try:
     df = load_data()
 except Exception as e:
-    st.error(f"לא ניתן לטעון את הדאטה. בדוק את ההגדרות בקובץ secrets.toml")
-    st.info("כדי להתחבר לגוגל שיטס, הוסף את ה-URL בקובץ .streamlit/secrets.toml")
-    st.code("""
-# .streamlit/secrets.toml
-GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0"
-    """)
+    st.error(f"לא ניתן לטעון את הדאטה")
     st.stop()
 
-# כותרת ראשית
+# Header
 st.markdown('<h1 class="main-header">🚀 Crypto Trading Signals Dashboard</h1>', unsafe_allow_html=True)
 
-# הצגת מידע על עדכון אחרון
+# Last update info
 last_update = df['Timestamp'].max()
-st.sidebar.markdown(f"**🕐 עדכון אחרון:**  \n{last_update.strftime('%d/%m/%Y %H:%M')}")
+col_update1, col_update2, col_update3 = st.columns([2, 1, 1])
+with col_update1:
+    st.markdown(f"**🕐 Last Update:** {last_update.strftime('%d/%m/%Y %H:%M')}")
 
-# פילטרים בסיידבר
-st.sidebar.header("⚙️ פילטרים")
+# Sidebar filters
+st.sidebar.markdown("## ⚙️ Filters")
 
-# בחירת טווח תאריכים
 date_range = st.sidebar.date_input(
-    "בחר טווח תאריכים",
+    "📅 Date Range",
     value=(df['Timestamp'].min().date(), df['Timestamp'].max().date()),
     min_value=df['Timestamp'].min().date(),
     max_value=df['Timestamp'].max().date()
 )
 
-# פילטר לפי כיוון
 side_filter = st.sidebar.multiselect(
-    "כיוון",
+    "📊 Direction",
     options=['ALL'] + list(df['Side'].unique()),
     default=['ALL']
 )
 
-# פילטר לפי תוצאה
 result_filter = st.sidebar.multiselect(
-    "תוצאה",
+    "✅ Result",
     options=['ALL'] + list(df['Result'].dropna().unique()),
     default=['ALL']
 )
 
-# החלת פילטרים
+# Apply filters
 df_filtered = df.copy()
 
-# פילטר תאריכים
 if len(date_range) == 2:
     df_filtered = df_filtered[
         (df_filtered['Timestamp'].dt.date >= date_range[0]) & 
         (df_filtered['Timestamp'].dt.date <= date_range[1])
     ]
 
-# פילטר כיוון
 if 'ALL' not in side_filter and side_filter:
     df_filtered = df_filtered[df_filtered['Side'].isin(side_filter)]
 
-# פילטר תוצאה
 if 'ALL' not in result_filter and result_filter:
     df_filtered = df_filtered[df_filtered['Result'].isin(result_filter)]
 
-# חישוב מטריקות
+# Calculate metrics
 completed_signals = df_filtered[df_filtered['Result'].isin(['TP1_HIT', 'TP2_HIT', 'SL_HIT'])]
 total_signals = len(df_filtered)
 completed_count = len(completed_signals)
 pending_count = len(df_filtered[df_filtered['Result'] == 'PENDING'])
 expired_count = len(df_filtered[df_filtered['Result'] == 'EXPIRED'])
 
-# Win Rate
 wins = len(completed_signals[completed_signals['Result'].isin(['TP1_HIT', 'TP2_HIT'])])
 losses = len(completed_signals[completed_signals['Result'] == 'SL_HIT'])
 win_rate = (wins / completed_count * 100) if completed_count > 0 else 0
 
-# Average P&L
 avg_pnl = completed_signals['P&L_%'].mean() if not completed_signals.empty else 0
 total_pnl = completed_signals['P&L_%'].sum() if not completed_signals.empty else 0
 
-# מטריקות עיקריות
-st.markdown("### 📊 סטטיסטיקות כלליות")
+# Main metrics
+st.markdown("### 📊 Key Performance Indicators")
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
@@ -193,24 +344,42 @@ with col5:
 
 st.divider()
 
-# שורה שנייה של גרפים
+# Charts row 1
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 📊 התפלגות תוצאות")
+    st.markdown("### 📊 Results Distribution")
     result_counts = df_filtered['Result'].value_counts()
-    fig_results = px.pie(
+    
+    fig_results = go.Figure(data=[go.Pie(
+        labels=result_counts.index,
         values=result_counts.values,
-        names=result_counts.index,
-        title="התפלגות סטטוסים",
-        color_discrete_sequence=px.colors.qualitative.Set3,
-        hole=0.4
+        hole=0.6,
+        marker=dict(
+            colors=['#06b6d4', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
+            line=dict(color='#1e293b', width=2)
+        ),
+        textfont=dict(size=14, color='white', family='Inter'),
+        hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+    )])
+    
+    fig_results.update_layout(
+        showlegend=True,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e2e8f0', family='Inter'),
+        margin=dict(t=30, b=30, l=30, r=30),
+        legend=dict(
+            bgcolor='rgba(30, 41, 59, 0.8)',
+            bordercolor='rgba(6, 182, 212, 0.3)',
+            borderwidth=1
+        )
     )
-    fig_results.update_traces(textposition='inside', textinfo='percent+label')
+    
     st.plotly_chart(fig_results, use_container_width=True)
 
 with col2:
-    st.markdown("### 📈 LONG vs SHORT")
+    st.markdown("### 📈 LONG vs SHORT Performance")
     side_stats = df_filtered.groupby('Side').agg({
         'Result': 'count',
         'P&L_%': 'mean'
@@ -218,38 +387,54 @@ with col2:
     side_stats.columns = ['Side', 'Count', 'Avg_PnL']
     
     fig_side = go.Figure()
+    
     fig_side.add_trace(go.Bar(
-        name='Count',
+        name='Signal Count',
         x=side_stats['Side'],
         y=side_stats['Count'],
-        yaxis='y',
-        marker_color='lightblue'
+        marker=dict(
+            color='#06b6d4',
+            line=dict(color='#0891b2', width=2)
+        ),
+        text=side_stats['Count'],
+        textposition='outside',
+        yaxis='y'
     ))
+    
     fig_side.add_trace(go.Scatter(
         name='Avg P&L %',
         x=side_stats['Side'],
         y=side_stats['Avg_PnL'],
-        yaxis='y2',
         mode='lines+markers',
-        marker=dict(size=12, color='red'),
-        line=dict(width=3)
+        marker=dict(size=15, color='#10b981', line=dict(color='#059669', width=2)),
+        line=dict(width=3, color='#10b981'),
+        yaxis='y2'
     ))
     
     fig_side.update_layout(
-        title='LONG vs SHORT Performance',
-        yaxis=dict(title='Count'),
-        yaxis2=dict(title='Avg P&L %', overlaying='y', side='right'),
-        hovermode='x'
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e2e8f0', family='Inter'),
+        yaxis=dict(title='Signal Count', gridcolor='rgba(6, 182, 212, 0.1)'),
+        yaxis2=dict(title='Avg P&L %', overlaying='y', side='right', gridcolor='rgba(16, 185, 129, 0.1)'),
+        hovermode='x unified',
+        margin=dict(t=30, b=30, l=30, r=30),
+        legend=dict(
+            bgcolor='rgba(30, 41, 59, 0.8)',
+            bordercolor='rgba(6, 182, 212, 0.3)',
+            borderwidth=1
+        )
     )
+    
     st.plotly_chart(fig_side, use_container_width=True)
 
 st.divider()
 
-# ביצועים לאורך זמן
-st.markdown("### 📅 ביצועים לאורך זמן")
+# Performance over time
+st.markdown("### 📅 Cumulative Performance")
 if not completed_signals.empty:
-    daily_pnl = completed_signals.groupby(completed_signals['Check_Date'].dt.date)['P&L_%'].agg(['sum', 'mean', 'count']).reset_index()
-    daily_pnl.columns = ['Date', 'Total_PnL', 'Avg_PnL', 'Count']
+    daily_pnl = completed_signals.groupby(completed_signals['Check_Date'].dt.date)['P&L_%'].agg(['sum', 'count']).reset_index()
+    daily_pnl.columns = ['Date', 'Total_PnL', 'Count']
     daily_pnl['Cumulative_PnL'] = daily_pnl['Total_PnL'].cumsum()
     
     fig_timeline = go.Figure()
@@ -257,25 +442,42 @@ if not completed_signals.empty:
     fig_timeline.add_trace(go.Scatter(
         x=daily_pnl['Date'],
         y=daily_pnl['Cumulative_PnL'],
-        mode='lines+markers',
+        mode='lines',
         name='Cumulative P&L',
-        line=dict(color='green', width=3),
-        fill='tozeroy'
+        line=dict(color='#06b6d4', width=3),
+        fill='tozeroy',
+        fillcolor='rgba(6, 182, 212, 0.2)',
+        hovertemplate='Date: %{x}<br>Cumulative P&L: %{y:.2f}%<extra></extra>'
     ))
     
     fig_timeline.update_layout(
-        title='Cumulative P&L Over Time',
-        xaxis_title='Date',
-        yaxis_title='Cumulative P&L %',
-        hovermode='x unified'
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e2e8f0', family='Inter'),
+        xaxis=dict(
+            title='Date',
+            gridcolor='rgba(6, 182, 212, 0.1)',
+            showgrid=True
+        ),
+        yaxis=dict(
+            title='Cumulative P&L %',
+            gridcolor='rgba(6, 182, 212, 0.1)',
+            showgrid=True,
+            zeroline=True,
+            zerolinecolor='rgba(239, 68, 68, 0.3)',
+            zerolinewidth=2
+        ),
+        hovermode='x unified',
+        margin=dict(t=30, b=30, l=30, r=30)
     )
+    
     st.plotly_chart(fig_timeline, use_container_width=True)
 else:
-    st.info("אין עדיין סיגנלים שהושלמו להצגת גרף זמן")
+    st.info("⏳ No completed signals yet to display timeline")
 
 st.divider()
 
-# Top Performers
+# Top performers
 col1, col2 = st.columns(2)
 
 with col1:
@@ -283,31 +485,23 @@ with col1:
     if not completed_signals.empty:
         top_winners = completed_signals.nlargest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'Entry', 'P&L_%', 'Result']]
         top_winners['Timestamp'] = top_winners['Timestamp'].dt.strftime('%Y-%m-%d %H:%M')
-        st.dataframe(
-            top_winners,
-            use_container_width=True,
-            hide_index=True
-        )
+        st.dataframe(top_winners, use_container_width=True, hide_index=True)
     else:
-        st.info("אין עדיין נתונים")
+        st.info("⏳ No data yet")
 
 with col2:
     st.markdown("### ⚠️ Top 10 Losers")
     if not completed_signals.empty:
         top_losers = completed_signals.nsmallest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'Entry', 'P&L_%', 'Result']]
         top_losers['Timestamp'] = top_losers['Timestamp'].dt.strftime('%Y-%m-%d %H:%M')
-        st.dataframe(
-            top_losers,
-            use_container_width=True,
-            hide_index=True
-        )
+        st.dataframe(top_losers, use_container_width=True, hide_index=True)
     else:
-        st.info("אין עדיין נתונים")
+        st.info("⏳ No data yet")
 
 st.divider()
 
-# ניתוח לפי מטבע
-st.markdown("### 💎 ביצועים לפי מטבע")
+# Symbol performance
+st.markdown("### 💎 Performance by Symbol")
 if not completed_signals.empty:
     symbol_stats = completed_signals.groupby('Symbol').agg({
         'P&L_%': ['mean', 'sum', 'count'],
@@ -318,17 +512,37 @@ if not completed_signals.empty:
     symbol_stats['Win_Rate'] = (symbol_stats['Wins'] / symbol_stats['Count'] * 100).round(1)
     symbol_stats = symbol_stats.sort_values('Total_PnL', ascending=False).head(15)
     
-    fig_symbols = px.bar(
-        symbol_stats,
-        x='Symbol',
-        y='Total_PnL',
-        color='Win_Rate',
-        title='Top 15 Symbols by Total P&L',
-        labels={'Total_PnL': 'Total P&L %', 'Win_Rate': 'Win Rate %'},
-        color_continuous_scale='RdYlGn',
-        text='Win_Rate'
+    fig_symbols = go.Figure()
+    
+    colors = ['#10b981' if x > 0 else '#ef4444' for x in symbol_stats['Total_PnL']]
+    
+    fig_symbols.add_trace(go.Bar(
+        x=symbol_stats['Symbol'],
+        y=symbol_stats['Total_PnL'],
+        marker=dict(
+            color=colors,
+            line=dict(color='#1e293b', width=1)
+        ),
+        text=symbol_stats['Win_Rate'].apply(lambda x: f'{x:.1f}%'),
+        textposition='outside',
+        hovertemplate='<b>%{x}</b><br>Total P&L: %{y:.2f}%<br>Win Rate: %{text}<extra></extra>'
+    ))
+    
+    fig_symbols.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e2e8f0', family='Inter'),
+        xaxis=dict(title='Symbol', gridcolor='rgba(6, 182, 212, 0.1)'),
+        yaxis=dict(
+            title='Total P&L %',
+            gridcolor='rgba(6, 182, 212, 0.1)',
+            zeroline=True,
+            zerolinecolor='rgba(239, 68, 68, 0.3)',
+            zerolinewidth=2
+        ),
+        margin=dict(t=30, b=30, l=30, r=30)
     )
-    fig_symbols.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+    
     st.plotly_chart(fig_symbols, use_container_width=True)
     
     st.dataframe(
@@ -337,85 +551,53 @@ if not completed_signals.empty:
         hide_index=True
     )
 else:
-    st.info("אין עדיין נתונים מספיקים לניתוח לפי מטבע")
+    st.info("⏳ Not enough data for symbol analysis")
 
 st.divider()
 
-# ניתוח Confidence
-st.markdown("### 🎯 ביצועים לפי רמת Confidence")
-if not completed_signals.empty:
-    confidence_bins = [0, 60, 70, 80, 90, 100]
-    confidence_labels = ['50-60', '60-70', '70-80', '80-90', '90-100']
-    completed_signals['Confidence_Range'] = pd.cut(
-        completed_signals['Confidence'],
-        bins=confidence_bins,
-        labels=confidence_labels,
-        include_lowest=True
-    )
-    
-    confidence_stats = completed_signals.groupby('Confidence_Range').agg({
-        'P&L_%': ['mean', 'count'],
-        'Result': lambda x: (x.isin(['TP1_HIT', 'TP2_HIT'])).sum()
-    }).reset_index()
-    
-    confidence_stats.columns = ['Confidence_Range', 'Avg_PnL', 'Count', 'Wins']
-    confidence_stats['Win_Rate'] = (confidence_stats['Wins'] / confidence_stats['Count'] * 100).round(1)
-    
-    fig_confidence = px.scatter(
-        confidence_stats,
-        x='Confidence_Range',
-        y='Win_Rate',
-        size='Count',
-        color='Avg_PnL',
-        title='Win Rate vs Confidence Level',
-        labels={'Win_Rate': 'Win Rate %', 'Confidence_Range': 'Confidence Range'},
-        color_continuous_scale='RdYlGn'
-    )
-    st.plotly_chart(fig_confidence, use_container_width=True)
-else:
-    st.info("אין עדיין נתונים לניתוח Confidence")
-
-st.divider()
-
-# סיגנלים אחרונים
-st.markdown("### 🔄 סיגנלים אחרונים (20)")
+# Recent signals
+st.markdown("### 🔄 Recent Signals (Latest 20)")
 recent_signals = df_filtered.sort_values('Timestamp', ascending=False).head(20)
 recent_signals_display = recent_signals[[
     'Timestamp', 'Symbol', 'Side', 'Entry', 'SL', 'TP1', 'TP2',
-    'Confidence', 'Result', 'P&L_%', 'Check_Date'
+    'Confidence', 'Result', 'P&L_%'
 ]].copy()
 
 recent_signals_display['Timestamp'] = recent_signals_display['Timestamp'].dt.strftime('%Y-%m-%d %H:%M')
-recent_signals_display['Check_Date'] = recent_signals_display['Check_Date'].dt.strftime('%Y-%m-%d %H:%M')
 
-st.dataframe(
-    recent_signals_display,
-    use_container_width=True,
-    hide_index=True
-)
+st.dataframe(recent_signals_display, use_container_width=True, hide_index=True)
 
-# סטטיסטיקות נוספות בסיידבר
+# Sidebar stats
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 Quick Stats")
-st.sidebar.metric("Best Symbol", 
-                 completed_signals.groupby('Symbol')['P&L_%'].sum().idxmax() if not completed_signals.empty else "N/A",
-                 f"{completed_signals.groupby('Symbol')['P&L_%'].sum().max():.2f}%" if not completed_signals.empty else "0%")
-st.sidebar.metric("Worst Symbol", 
-                 completed_signals.groupby('Symbol')['P&L_%'].sum().idxmin() if not completed_signals.empty else "N/A",
-                 f"{completed_signals.groupby('Symbol')['P&L_%'].sum().min():.2f}%" if not completed_signals.empty else "0%")
 
-# הוספת refresh button
+if not completed_signals.empty:
+    best_symbol = completed_signals.groupby('Symbol')['P&L_%'].sum().idxmax()
+    best_pnl = completed_signals.groupby('Symbol')['P&L_%'].sum().max()
+    worst_symbol = completed_signals.groupby('Symbol')['P&L_%'].sum().idxmin()
+    worst_pnl = completed_signals.groupby('Symbol')['P&L_%'].sum().min()
+    
+    st.sidebar.metric("🏆 Best Symbol", best_symbol, f"{best_pnl:.2f}%")
+    st.sidebar.metric("⚠️ Worst Symbol", worst_symbol, f"{worst_pnl:.2f}%")
+else:
+    st.sidebar.info("⏳ No completed signals yet")
+
+# Refresh button
 if st.sidebar.button("🔄 Refresh Data"):
     st.cache_data.clear()
     st.rerun()
 
-# מידע על עדכון
 st.sidebar.markdown("---")
-st.sidebar.info("הדאטה מתעדכן אוטומטית כל 5 דקות")
+st.sidebar.info("🔄 Data auto-refreshes every 5 minutes")
 
-# פוטר
+# Footer
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>Made with ❤️ by FlowBot Automation | Data syncs every 4 hours from n8n bot</div>",
+    """
+    <div style='text-align: center; color: #94a3b8; padding: 2rem 0;'>
+        <p style='margin: 0; font-size: 0.9rem;'>Made with ❤️ by <span style='color: #06b6d4; font-weight: 600;'>FlowBot Automation</span></p>
+        <p style='margin: 0.5rem 0 0 0; font-size: 0.8rem;'>Data syncs every 4 hours from n8n bot | Real-time analytics dashboard</p>
+    </div>
+    """,
     unsafe_allow_html=True
 )
