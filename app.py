@@ -1,71 +1,59 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 from datetime import datetime
+import numpy as np
 
-st.set_page_config(page_title="Crypto Signals", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Crypto Signals Dashboard", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
 
-# CSS with 3D Effects & Lighter Theme
+# SAAS-Style Glassmorphism CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@300;400;600;700;800&display=swap');
     
     * {
-        font-family: 'Inter', sans-serif !important;
+        font-family: 'Roboto', 'Open Sans', sans-serif !important;
     }
     
     #MainMenu, footer, header {visibility: hidden;}
     
-    /* Main background - LIGHTER */
+    /* Dark SAAS Background */
     .stApp {
-        background: linear-gradient(135deg, #1a2332 0%, #253447 100%) !important;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+        background-attachment: fixed !important;
     }
     
     .main .block-container {
-        padding: 2.5rem 3.5rem !important;
-        max-width: 1800px !important;
+        padding: 2rem 2.5rem !important;
+        max-width: 1920px !important;
     }
     
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background: rgba(30, 41, 59, 0.7) !important;
-        backdrop-filter: blur(10px) !important;
-        width: 80px !important;
-        min-width: 80px !important;
-        border-right: 1px solid rgba(148, 163, 184, 0.2) !important;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
-    }
-    
-    /* Headers */
+    /* Header */
     h1 {
-        font-size: 2rem !important;
-        font-weight: 700 !important;
-        color: #FFFFFF !important;
-        margin: 0 0 0.5rem 0 !important;
-        letter-spacing: -0.02em !important;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
+        background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        margin: 0 0 2rem 0 !important;
+        letter-spacing: -0.03em !important;
     }
     
-    h2 {
-        font-size: 0.8125rem !important;
-        font-weight: 600 !important;
-        color: #CBD5E1 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.1em !important;
-        margin: 2.5rem 0 1.25rem 0 !important;
-    }
-    
-    /* Metric cards - 3D EFFECT */
+    /* Glassmorphic Cards - 3D Effect */
     [data-testid="stMetric"] {
-        background: linear-gradient(145deg, #2d3e52 0%, #1e2a3a 100%) !important;
-        padding: 2rem 1.75rem !important;
-        border-radius: 20px !important;
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 24px !important;
+        padding: 2rem 1.5rem !important;
         box-shadow: 
-            0 10px 30px rgba(0, 0, 0, 0.5),
-            0 1px 0 rgba(255, 255, 255, 0.1) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.3) inset !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            0 8px 32px 0 rgba(0, 0, 0, 0.37),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 0 rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         position: relative !important;
         overflow: hidden !important;
     }
@@ -74,237 +62,215 @@ st.markdown("""
         content: '';
         position: absolute;
         top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #3B82F6, #06B6D4, #10B981);
-        opacity: 0;
-        transition: opacity 0.3s;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.6s;
     }
     
     [data-testid="stMetric"]:hover {
         transform: translateY(-8px) scale(1.02) !important;
         box-shadow: 
-            0 20px 50px rgba(0, 0, 0, 0.6),
-            0 2px 0 rgba(255, 255, 255, 0.15) inset,
-            0 0 30px rgba(59, 130, 246, 0.3) !important;
+            0 20px 60px 0 rgba(0, 0, 0, 0.5),
+            0 0 40px rgba(59, 130, 246, 0.3),
+            inset 0 2px 0 0 rgba(255, 255, 255, 0.15) !important;
         border-color: rgba(59, 130, 246, 0.5) !important;
     }
     
     [data-testid="stMetric"]:hover::before {
-        opacity: 1;
+        left: 100%;
     }
     
     [data-testid="stMetricLabel"] {
-        font-size: 0.6875rem !important;
+        font-size: 0.75rem !important;
         font-weight: 700 !important;
-        color: #94A3B8 !important;
+        color: #94a3b8 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.08em !important;
-        margin-bottom: 0.875rem !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        letter-spacing: 0.1em !important;
+        margin-bottom: 0.75rem !important;
     }
     
     [data-testid="stMetricValue"] {
-        font-size: 2.5rem !important;
-        font-weight: 800 !important;
-        color: #FFFFFF !important;
+        font-size: 2.75rem !important;
+        font-weight: 900 !important;
+        background: linear-gradient(135deg, #ffffff, #e0e7ff) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
         line-height: 1.1 !important;
-        text-shadow: 
-            0 2px 4px rgba(0, 0, 0, 0.4),
-            0 0 20px rgba(59, 130, 246, 0.3) !important;
+        margin: 0.5rem 0 !important;
     }
     
     [data-testid="stMetricDelta"] {
         font-size: 0.875rem !important;
         font-weight: 600 !important;
-        margin-top: 0.625rem !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        margin-top: 0.5rem !important;
     }
     
-    /* Chart containers - GLASSMORPHISM + 3D */
-    .chart-box {
-        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
-        backdrop-filter: blur(10px) !important;
-        border-radius: 20px !important;
-        padding: 2rem !important;
+    /* Chart Containers - Glassmorphism */
+    .glass-card {
+        background: rgba(30, 41, 59, 0.3) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 24px !important;
+        padding: 2rem !important;
         box-shadow: 
-            0 10px 30px rgba(0, 0, 0, 0.5),
-            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
+            0 8px 32px 0 rgba(0, 0, 0, 0.37),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+        margin-bottom: 2rem !important;
+        position: relative !important;
     }
     
-    .chart-box::after {
+    .glass-card::after {
         content: '';
         position: absolute;
         top: -50%;
         right: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
         pointer-events: none;
+        animation: glow 8s ease-in-out infinite;
     }
     
-    .chart-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #F8FAFC;
-        margin-bottom: 1.25rem;
-        letter-spacing: -0.01em;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    @keyframes glow {
+        0%, 100% { opacity: 0.3; transform: rotate(0deg); }
+        50% { opacity: 0.6; transform: rotate(180deg); }
     }
     
-    .js-plotly-plot {
-        background: transparent !important;
+    .section-title {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        color: #f1f5f9 !important;
+        margin-bottom: 1.5rem !important;
+        letter-spacing: -0.02em !important;
     }
     
-    /* Dataframes - 3D EFFECT */
+    /* DataFrames - Glassmorphic */
     .stDataFrame {
+        background: rgba(30, 41, 59, 0.3) !important;
+        backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 16px !important;
-        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
-        box-shadow: 
-            0 8px 20px rgba(0, 0, 0, 0.4),
-            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+        border-radius: 20px !important;
         overflow: hidden !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
     }
     
     .stDataFrame thead tr th {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-        color: #CBD5E1 !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+        color: #cbd5e1 !important;
         font-weight: 700 !important;
-        font-size: 0.6875rem !important;
+        font-size: 0.75rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         padding: 1rem !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.3) !important;
     }
     
     .stDataFrame tbody tr {
-        background: rgba(30, 42, 58, 0.5) !important;
+        background: rgba(30, 41, 59, 0.2) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s ease !important;
     }
     
     .stDataFrame tbody tr:hover {
-        background: rgba(45, 62, 82, 0.8) !important;
-        transform: translateX(2px) !important;
+        background: rgba(59, 130, 246, 0.1) !important;
+        transform: translateX(4px) !important;
     }
     
     .stDataFrame tbody tr td {
-        color: #F8FAFC !important;
-        padding: 0.875rem 1rem !important;
+        color: #f1f5f9 !important;
+        padding: 1rem !important;
         font-size: 0.875rem !important;
         font-weight: 500 !important;
     }
     
-    /* Buttons - 3D RAISED */
-    .stButton button {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 12px !important;
-        padding: 0.75rem 1.5rem !important;
-        font-weight: 600 !important;
-        font-size: 0.875rem !important;
-        box-shadow: 
-            0 6px 20px rgba(59, 130, 246, 0.4),
-            0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
-        transition: all 0.2s ease !important;
-        position: relative !important;
-    }
-    
-    .stButton button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 
-            0 10px 30px rgba(59, 130, 246, 0.5),
-            0 1px 0 rgba(255, 255, 255, 0.3) inset !important;
-    }
-    
-    .stButton button:active {
-        transform: translateY(-1px) !important;
-        box-shadow: 
-            0 4px 15px rgba(59, 130, 246, 0.4),
-            0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
-    }
-    
-    /* Select boxes - ELEVATED */
-    .stSelectbox > div > div,
-    .stMultiSelect > div > div {
-        background: linear-gradient(145deg, rgba(45, 62, 82, 0.9) 0%, rgba(30, 42, 58, 0.9) 100%) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        border-radius: 12px !important;
-        color: #F8FAFC !important;
-        box-shadow: 
-            0 4px 15px rgba(0, 0, 0, 0.3),
-            0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
-    }
-    
-    /* Info boxes - GLASS EFFECT */
+    /* Info Box - Gradient */
     .stInfo {
-        background: rgba(59, 130, 246, 0.15) !important;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2)) !important;
         backdrop-filter: blur(10px) !important;
         border: 1px solid rgba(59, 130, 246, 0.3) !important;
-        border-radius: 12px !important;
-        color: #F8FAFC !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        border-radius: 16px !important;
+        color: #e0e7ff !important;
+        padding: 1rem 1.5rem !important;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2) !important;
     }
     
-    /* Divider - GLOWING */
-    hr {
-        border: none !important;
-        height: 2px !important;
-        background: linear-gradient(
-            90deg, 
-            transparent, 
-            rgba(59, 130, 246, 0.5) 20%,
-            rgba(59, 130, 246, 0.8) 50%,
-            rgba(59, 130, 246, 0.5) 80%,
-            transparent
-        ) !important;
-        margin: 3rem 0 !important;
-        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+    /* Success Box - Green Gradient */
+    .stSuccess {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2)) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        border-radius: 16px !important;
+        color: #d1fae5 !important;
+        padding: 1rem 1.5rem !important;
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2) !important;
     }
     
-    /* Scrollbar - MODERN */
+    /* Plotly Charts - Transparent */
+    .js-plotly-plot {
+        background: transparent !important;
+    }
+    
+    /* Scrollbar - Gradient */
     ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
     }
     
     ::-webkit-scrollbar-track {
-        background: rgba(30, 41, 59, 0.5);
+        background: rgba(15, 23, 42, 0.5);
         border-radius: 10px;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #3B82F6, #2563EB);
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
         border-radius: 10px;
-        border: 2px solid rgba(30, 41, 59, 0.5);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        border: 2px solid rgba(15, 23, 42, 0.5);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
     }
     
-    /* Floating animation for metrics */
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); }
+    /* Divider - Gradient Line */
+    hr {
+        border: none !important;
+        height: 2px !important;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(59, 130, 246, 0.6) 20%,
+            rgba(139, 92, 246, 0.6) 50%,
+            rgba(59, 130, 246, 0.6) 80%,
+            transparent
+        ) !important;
+        margin: 3rem 0 !important;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
     }
     
-    /* Gradient text for numbers */
-    [data-testid="stMetricValue"] {
-        background: linear-gradient(135deg, #FFFFFF 0%, #E0E7FF 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    /* Select Boxes - Glassmorphic */
+    .stSelectbox > div > div,
+    .stMultiSelect > div > div {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        color: #f1f5f9 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Date Input - Glassmorphic */
+    .stDateInput > div > div {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        color: #f1f5f9 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -332,35 +298,29 @@ def load_data():
     df['Confidence'] = pd.to_numeric(df['Confidence'], errors='coerce')
     df['Entry'] = pd.to_numeric(df['Entry'], errors='coerce')
     df['SL'] = pd.to_numeric(df['SL'], errors='coerce')
-    
-    # ✅ Calculate SL Distance
     df['SL_Distance_%'] = abs((df['Entry'] - df['SL']) / df['Entry'] * 100)
     
     return df
 
 df = load_data()
 
-# Sidebar
-st.sidebar.markdown("🏠")
-st.sidebar.markdown("📊")
-st.sidebar.markdown("💰")
+# Header with gradient
+st.markdown("# 📊 Crypto Trading Signals")
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Header
-col1, col2 = st.columns([3, 1])
+# Filters - Compact Row
+col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
 with col1:
-    st.markdown("# Dashboard")
+    date_range = st.date_input("📅 Date Range", value=(df['Timestamp'].min().date(), df['Timestamp'].max().date()), label_visibility="collapsed")
 with col2:
-    last = df['Timestamp'].max()
-    st.markdown(f"<p style='color: #CBD5E1; font-size: 0.875rem; text-align: right;'>Updated {last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
-
-# Filters
-col1, col2, col3 = st.columns([2, 1, 1])
-with col1:
-    date_range = st.date_input("Date Range", value=(df['Timestamp'].min().date(), df['Timestamp'].max().date()), label_visibility="collapsed")
-with col2:
-    side_filter = st.multiselect("Direction", ['ALL'] + list(df['Side'].unique()), default=['ALL'], label_visibility="collapsed")
+    side_filter = st.multiselect("📈 Direction", ['ALL'] + list(df['Side'].unique()), default=['ALL'], label_visibility="collapsed")
 with col3:
-    result_filter = st.multiselect("Status", ['ALL'] + list(df['Result'].dropna().unique()), default=['ALL'], label_visibility="collapsed")
+    result_filter = st.multiselect("🎯 Status", ['ALL'] + list(df['Result'].dropna().unique()), default=['ALL'], label_visibility="collapsed")
+with col4:
+    last = df['Timestamp'].max()
+    st.markdown(f"<p style='color: #94a3b8; font-size: 0.75rem; text-align: right; margin-top: 0.5rem;'>Updated<br>{last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Apply filters
 df_filtered = df.copy()
@@ -371,45 +331,39 @@ if 'ALL' not in side_filter and side_filter:
 if 'ALL' not in result_filter and result_filter:
     df_filtered = df_filtered[df_filtered['Result'].isin(result_filter)]
 
-# Metrics
+# Calculate metrics
 completed = df_filtered[df_filtered['Result'].isin(['TP1_HIT', 'TP2_HIT', 'SL_HIT'])]
 total = len(df_filtered)
 completed_count = len(completed)
 pending = len(df_filtered[df_filtered['Result'] == 'PENDING'])
-expired = len(df_filtered[df_filtered['Result'] == 'EXPIRED'])
 wins = len(completed[completed['Result'].isin(['TP1_HIT', 'TP2_HIT'])])
 losses = len(completed[completed['Result'] == 'SL_HIT'])
 win_rate = (wins / completed_count * 100) if completed_count > 0 else 0
 avg_pnl = completed['P&L_%'].mean() if not completed.empty else 0
 total_pnl = completed['P&L_%'].sum() if not completed.empty else 0
-
-# ✅ SL Analysis
 sl_trades = df_filtered[df_filtered['Result'] == 'SL_HIT']
 avg_sl_dist = sl_trades['SL_Distance_%'].mean() if not sl_trades.empty else 0
 
-st.markdown("<br>", unsafe_allow_html=True)
+# KPI Cards - 4 Column Grid
+col1, col2, col3, col4 = st.columns(4)
 
-# KPIs
-col1, col2, col3, col4, col5, col6 = st.columns(6)
 with col1:
     st.metric("Win Rate", f"{win_rate:.1f}%", f"{wins}W / {losses}L")
+
 with col2:
-    st.metric("Avg P&L", f"{avg_pnl:.2f}%", f"{total_pnl:+.1f}% total")
+    delta_color = "normal" if total_pnl >= 0 else "inverse"
+    st.metric("Total P&L", f"{total_pnl:+.2f}%", f"Avg: {avg_pnl:.2f}%")
+
 with col3:
-    # ✅ NEW: Avg SL Distance metric
-    st.metric("Avg SL Dist", f"{avg_sl_dist:.2f}%", f"{len(sl_trades)} SL hits")
+    st.metric("Signals", f"{total:,}", f"{completed_count} completed")
+
 with col4:
-    st.metric("Total Signals", f"{total:,}", f"{completed_count} done")
-with col5:
-    st.metric("Pending", f"{pending:,}", f"{(pending/total*100):.1f}%" if total > 0 else "0%")
-with col6:
-    st.metric("Expired", f"{expired:,}", f"{(expired/total*100):.1f}%" if total > 0 else "0%")
+    st.metric("Avg SL Distance", f"{avg_sl_dist:.2f}%", f"{len(sl_trades)} SL hits")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ✅ NEW: SL Distance Quick Insight
+# SL Insight Alert
 if not sl_trades.empty and len(completed) >= 50:
-    # Calculate optimal range
     completed_copy = completed.copy()
     completed_copy['SL_Range'] = pd.cut(
         completed_copy['SL_Distance_%'],
@@ -430,95 +384,130 @@ if not sl_trades.empty and len(completed) >= 50:
     
     if not range_stats_filtered.empty:
         best = range_stats_filtered.loc[range_stats_filtered['Win_Rate'].idxmax()]
-        if best['Win_Rate'] > win_rate + 5:  # Only show if significant improvement
-            st.info(f"💡 **SL Insight:** Range {best['SL_Range']} has {best['Win_Rate']:.1f}% Win Rate (vs {win_rate:.1f}% overall). Consider optimizing SL distance. [View detailed analysis in SL Analysis page]")
+        if best['Win_Rate'] > win_rate + 5:
+            st.success(f"💡 **Optimization Opportunity:** SL range {best['SL_Range']} shows {best['Win_Rate']:.1f}% Win Rate (vs {win_rate:.1f}% overall) across {best['Total']} trades. Consider adjusting your SL strategy.")
 
-# Charts
-col1, col2 = st.columns(2)
+st.markdown("<br>", unsafe_allow_html=True)
 
-with col1:
-    st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-    st.markdown("<p class='chart-title'>Results Distribution</p>", unsafe_allow_html=True)
+# Main Grid - 2 Columns
+col_left, col_right = st.columns([1, 1])
+
+with col_left:
+    # Results Distribution
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>📊 Results Distribution</p>", unsafe_allow_html=True)
     
     result_counts = df_filtered['Result'].value_counts()
-    fig = go.Figure(data=[go.Pie(
+    fig1 = go.Figure(data=[go.Pie(
         labels=result_counts.index,
         values=result_counts.values,
-        hole=0.6,
+        hole=0.65,
         marker=dict(
-            colors=['#3B82F6', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6'],
-            line=dict(color='#1a2332', width=3)
+            colors=['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
+            line=dict(color='#0f172a', width=3)
         ),
-        textfont=dict(size=14, color='white', family='Inter', weight=600),
+        textfont=dict(size=13, color='white', family='Roboto', weight=600),
         textposition='outside',
-        textinfo='label+percent'
+        textinfo='label+percent',
+        hovertemplate='<b>%{label}</b><br>%{value} trades<br>%{percent}<extra></extra>'
     )])
     
-    fig.update_layout(
+    fig1.update_layout(
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F8FAFC', family='Inter'),
+        font=dict(color='#f1f5f9', family='Roboto'),
         margin=dict(t=10, b=10, l=10, r=10),
-        height=280,
+        height=300,
         annotations=[dict(
-            text=f'{total}<br><span style="font-size:14px; color:#CBD5E1;">signals</span>',
+            text=f'<b>{total}</b><br><span style="font-size:12px; color:#94a3b8;">Total Signals</span>',
             x=0.5, y=0.5,
-            font_size=32,
-            font_color='#F8FAFC',
-            font_family='Inter',
-            font_weight=700,
+            font_size=28,
+            font_color='#f1f5f9',
+            font_family='Roboto',
             showarrow=False
         )]
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig1, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-with col2:
-    st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-    st.markdown("<p class='chart-title'>Long vs Short Performance</p>", unsafe_allow_html=True)
+with col_right:
+    # Long vs Short Performance
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>📈 LONG vs SHORT Performance</p>", unsafe_allow_html=True)
     
-    side_stats = df_filtered.groupby('Side').agg({'Result': 'count', 'P&L_%': 'mean'}).reset_index()
-    side_stats.columns = ['Side', 'Count', 'Avg_PnL']
+    side_stats = completed.groupby('Side').agg({
+        'Result': 'count',
+        'P&L_%': 'sum'
+    }).reset_index()
+    side_stats.columns = ['Side', 'Count', 'Total_PnL']
+    side_stats['Win_Rate'] = side_stats.apply(
+        lambda row: (completed[(completed['Side'] == row['Side']) & (completed['Result'].isin(['TP1_HIT', 'TP2_HIT']))].shape[0] / row['Count'] * 100) if row['Count'] > 0 else 0,
+        axis=1
+    )
     
     fig2 = go.Figure()
+    
     fig2.add_trace(go.Bar(
         x=side_stats['Side'],
-        y=side_stats['Count'],
-        marker=dict(color=['#3B82F6', '#06B6D4'], line=dict(color='#1a2332', width=2)),
-        text=side_stats['Count'],
+        y=side_stats['Total_PnL'],
+        name='Total P&L',
+        marker=dict(
+            color=['#3b82f6' if side == 'LONG' else '#8b5cf6' for side in side_stats['Side']],
+            line=dict(color='#0f172a', width=2)
+        ),
+        text=side_stats['Total_PnL'].apply(lambda x: f"{x:+.1f}%"),
         textposition='outside',
-        textfont=dict(size=14, color='#F8FAFC', weight=600),
-        yaxis='y'
+        textfont=dict(size=12, color='#f1f5f9', weight=600),
+        hovertemplate='<b>%{x}</b><br>P&L: %{y:.2f}%<extra></extra>'
     ))
     
     fig2.add_trace(go.Scatter(
         x=side_stats['Side'],
-        y=side_stats['Avg_PnL'],
-        mode='lines+markers',
-        marker=dict(size=12, color='#10B981', line=dict(color='#F8FAFC', width=2)),
-        line=dict(width=3, color='#10B981'),
-        yaxis='y2'
+        y=side_stats['Win_Rate'],
+        mode='lines+markers+text',
+        name='Win Rate',
+        yaxis='y2',
+        marker=dict(size=14, color='#10b981', line=dict(color='#f1f5f9', width=2)),
+        line=dict(width=3, color='#10b981'),
+        text=side_stats['Win_Rate'].apply(lambda x: f"{x:.0f}%"),
+        textposition='top center',
+        textfont=dict(size=11, color='#10b981', weight=600),
+        hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<extra></extra>'
     ))
     
     fig2.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F8FAFC', family='Inter'),
-        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True),
-        yaxis2=dict(overlaying='y', side='right'),
-        margin=dict(t=10, b=10, l=10, r=10),
-        height=280,
-        showlegend=False
+        font=dict(color='#f1f5f9', family='Roboto'),
+        yaxis=dict(
+            title='P&L (%)',
+            gridcolor='rgba(255, 255, 255, 0.08)',
+            showgrid=True,
+            zeroline=True,
+            zerolinecolor='rgba(239, 68, 68, 0.3)',
+            title_font=dict(size=11, color='#94a3b8')
+        ),
+        yaxis2=dict(
+            title='Win Rate (%)',
+            overlaying='y',
+            side='right',
+            showgrid=False,
+            title_font=dict(size=11, color='#94a3b8')
+        ),
+        margin=dict(t=40, b=10, l=10, r=10),
+        height=300,
+        showlegend=False,
+        hovermode='x unified'
     )
     st.plotly_chart(fig2, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Timeline
-st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-st.markdown("<p class='chart-title'>Cumulative Performance</p>", unsafe_allow_html=True)
+# Cumulative Performance - Full Width
+st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+st.markdown("<p class='section-title'>💰 Cumulative P&L Performance</p>", unsafe_allow_html=True)
 
 if not completed.empty:
     daily = completed.groupby(completed['Check_Date'].dt.date)['P&L_%'].sum().reset_index()
@@ -526,340 +515,336 @@ if not completed.empty:
     daily['Cumulative'] = daily['PnL'].cumsum()
     
     fig3 = go.Figure()
+    
     fig3.add_trace(go.Scatter(
         x=daily['Date'],
         y=daily['Cumulative'],
         mode='lines',
         fill='tozeroy',
-        line=dict(color='#3B82F6', width=3),
-        fillcolor='rgba(59, 130, 246, 0.2)'
+        line=dict(color='#3b82f6', width=3),
+        fillgradient=dict(
+            type='vertical',
+            colorscale=[[0, 'rgba(59, 130, 246, 0.4)'], [1, 'rgba(139, 92, 246, 0.1)']]
+        ),
+        hovertemplate='<b>%{x}</b><br>Cumulative P&L: %{y:.2f}%<extra></extra>'
     ))
     
     fig3.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F8FAFC', family='Inter'),
-        xaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True),
-        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', showgrid=True, zeroline=True, zerolinecolor='rgba(239, 68, 68, 0.5)'),
+        font=dict(color='#f1f5f9', family='Roboto'),
+        xaxis=dict(
+            gridcolor='rgba(255, 255, 255, 0.08)',
+            showgrid=True,
+            title_font=dict(size=11, color='#94a3b8')
+        ),
+        yaxis=dict(
+            title='Cumulative P&L (%)',
+            gridcolor='rgba(255, 255, 255, 0.08)',
+            showgrid=True,
+            zeroline=True,
+            zerolinecolor='rgba(239, 68, 68, 0.5)',
+            zerolinewidth=2,
+            title_font=dict(size=11, color='#94a3b8')
+        ),
         margin=dict(t=10, b=10, l=10, r=10),
-        height=280
+        height=300,
+        hovermode='x unified'
     )
     st.plotly_chart(fig3, use_container_width=True)
 else:
-    st.info("No data")
+    st.info("No completed trades to display")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# SL ANALYSIS SECTION
+st.markdown("# 🛑 Stop Loss Analysis")
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Top performers
-col1, col2 = st.columns(2)
+# SL KPIs - 5 Columns
+col1, col2, col3, col4, col5 = st.columns(5)
+
+total_sl = len(sl_trades)
+total_tp = len(df_filtered[df_filtered['Result'].isin(['TP1_HIT', 'TP2_HIT'])])
+sl_rate = (total_sl / len(completed) * 100) if len(completed) > 0 else 0
+median_sl = sl_trades['SL_Distance_%'].median() if not sl_trades.empty else 0
+avg_sl_pnl = sl_trades['P&L_%'].mean() if not sl_trades.empty else 0
 
 with col1:
-    st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-    st.markdown("<p class='chart-title'>Top Winners</p>", unsafe_allow_html=True)
-    if not completed.empty:
-        winners = completed.nlargest(8, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
-        winners['Time'] = winners['Timestamp'].dt.strftime('%b %d')
-        winners['P&L'] = winners['P&L_%'].apply(lambda x: f"+{x:.2f}%")
-        st.dataframe(winners[['Time', 'Symbol', 'Side', 'P&L']], use_container_width=True, hide_index=True, height=280)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.metric("SL Hits", f"{total_sl}", f"{sl_rate:.1f}% of trades")
 
 with col2:
-    st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-    st.markdown("<p class='chart-title'>Top Losers</p>", unsafe_allow_html=True)
+    st.metric("Avg SL Distance", f"{avg_sl_dist:.2f}%")
+
+with col3:
+    st.metric("Median SL Distance", f"{median_sl:.2f}%")
+
+with col4:
+    st.metric("Avg SL Loss", f"{avg_sl_pnl:.2f}%")
+
+with col5:
+    st.metric("Current WR", f"{win_rate:.1f}%", f"{total_tp}W / {total_sl}L")
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# SL Analysis Grid - 2 Columns
+col_left, col_right = st.columns([1, 1])
+
+with col_left:
+    # Win Rate by SL Distance
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>🎯 Win Rate by SL Distance Range</p>", unsafe_allow_html=True)
+    
     if not completed.empty:
-        losers = completed.nsmallest(8, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
-        losers['Time'] = losers['Timestamp'].dt.strftime('%b %d')
-        losers['P&L'] = losers['P&L_%'].apply(lambda x: f"{x:.2f}%")
-        st.dataframe(losers[['Time', 'Symbol', 'Side', 'P&L']], use_container_width=True, hide_index=True, height=280)
+        completed_copy = completed.copy()
+        completed_copy['SL_Range'] = pd.cut(
+            completed_copy['SL_Distance_%'],
+            bins=[0, 2, 3, 4, 5, 6, 100],
+            labels=['0-2%', '2-3%', '3-4%', '4-5%', '5-6%', '6%+']
+        )
+        
+        range_stats = completed_copy.groupby('SL_Range', observed=True).agg({
+            'Result': [
+                ('total', 'count'),
+                ('wins', lambda x: (x.isin(['TP1_HIT', 'TP2_HIT'])).sum())
+            ]
+        }).reset_index()
+        
+        range_stats.columns = ['SL_Range', 'Total', 'Wins']
+        range_stats['Win_Rate'] = (range_stats['Wins'] / range_stats['Total'] * 100)
+        
+        fig4 = go.Figure()
+        
+        colors = ['#3b82f6' if wr >= win_rate else '#8b5cf6' for wr in range_stats['Win_Rate']]
+        
+        fig4.add_trace(go.Bar(
+            x=range_stats['SL_Range'],
+            y=range_stats['Win_Rate'],
+            marker=dict(
+                color=colors,
+                line=dict(color='#0f172a', width=2)
+            ),
+            text=range_stats['Win_Rate'].apply(lambda x: f"{x:.1f}%"),
+            textposition='outside',
+            textfont=dict(size=12, color='#f1f5f9', weight=600),
+            hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Trades: ' + range_stats['Total'].astype(str) + '<extra></extra>'
+        ))
+        
+        # Add current WR line
+        fig4.add_hline(
+            y=win_rate,
+            line_dash="dash",
+            line_color="#10b981",
+            line_width=2,
+            annotation_text=f"Current WR: {win_rate:.1f}%",
+            annotation_position="right",
+            annotation_font_size=11,
+            annotation_font_color="#10b981"
+        )
+        
+        fig4.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#f1f5f9', family='Roboto'),
+            xaxis=dict(
+                title='SL Distance Range',
+                gridcolor='rgba(255, 255, 255, 0.08)',
+                title_font=dict(size=11, color='#94a3b8')
+            ),
+            yaxis=dict(
+                title='Win Rate (%)',
+                gridcolor='rgba(255, 255, 255, 0.08)',
+                showgrid=True,
+                range=[0, 100],
+                title_font=dict(size=11, color='#94a3b8')
+            ),
+            margin=dict(t=10, b=10, l=10, r=10),
+            height=320,
+            showlegend=False
+        )
+        st.plotly_chart(fig4, use_container_width=True)
+        
+        # Best performing range
+        best = range_stats.loc[range_stats['Win_Rate'].idxmax()]
+        if best['Total'] >= 10:
+            st.success(f"🏆 **Best Range:** {best['SL_Range']} → {best['Win_Rate']:.1f}% WR ({best['Total']} trades)")
+    else:
+        st.info("Not enough data")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with col_right:
+    # SL Distance Distribution
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>📊 SL Distance: Winners vs Losers</p>", unsafe_allow_html=True)
+    
+    if not completed.empty:
+        tp_trades = completed[completed['Result'].isin(['TP1_HIT', 'TP2_HIT'])]
+        
+        fig5 = go.Figure()
+        
+        fig5.add_trace(go.Box(
+            y=tp_trades['SL_Distance_%'],
+            name='Winners',
+            marker=dict(color='#10b981'),
+            boxmean='sd',
+            hovertemplate='<b>Winners</b><br>SL Distance: %{y:.2f}%<extra></extra>'
+        ))
+        
+        fig5.add_trace(go.Box(
+            y=sl_trades['SL_Distance_%'],
+            name='Losers',
+            marker=dict(color='#ef4444'),
+            boxmean='sd',
+            hovertemplate='<b>Losers</b><br>SL Distance: %{y:.2f}%<extra></extra>'
+        ))
+        
+        fig5.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#f1f5f9', family='Roboto'),
+            yaxis=dict(
+                title='SL Distance (%)',
+                gridcolor='rgba(255, 255, 255, 0.08)',
+                showgrid=True,
+                title_font=dict(size=11, color='#94a3b8')
+            ),
+            margin=dict(t=10, b=10, l=10, r=10),
+            height=320,
+            showlegend=True,
+            legend=dict(
+                orientation='h',
+                yanchor='bottom',
+                y=1.02,
+                xanchor='right',
+                x=1,
+                bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#f1f5f9')
+            )
+        )
+        st.plotly_chart(fig5, use_container_width=True)
+        
+        # Stats
+        avg_winner_sl = tp_trades['SL_Distance_%'].mean() if not tp_trades.empty else 0
+        avg_loser_sl = sl_trades['SL_Distance_%'].mean() if not sl_trades.empty else 0
+        
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown(f"<p style='color: #10b981; font-size: 0.875rem;'><b>Winners avg:</b> {avg_winner_sl:.2f}%</p>", unsafe_allow_html=True)
+        with col_b:
+            st.markdown(f"<p style='color: #ef4444; font-size: 0.875rem;'><b>Losers avg:</b> {avg_loser_sl:.2f}%</p>", unsafe_allow_html=True)
+    else:
+        st.info("Not enough data")
+    
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Symbols
-st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-st.markdown("<p class='chart-title'>Top Performing Symbols</p>", unsafe_allow_html=True)
+# Recent SL Hits Table
+st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+st.markdown("<p class='section-title'>📋 Recent Stop Loss Hits</p>", unsafe_allow_html=True)
+
+if not sl_trades.empty:
+    recent_sl = sl_trades.sort_values('Timestamp', ascending=False).head(15).copy()
+    recent_sl['Time'] = recent_sl['Timestamp'].dt.strftime('%b %d, %H:%M')
+    recent_sl['SL Dist'] = recent_sl['SL_Distance_%'].apply(lambda x: f"{x:.2f}%")
+    recent_sl['P&L'] = recent_sl['P&L_%'].apply(lambda x: f"{x:.2f}%" if pd.notna(x) else "—")
+    recent_sl['Entry_fmt'] = recent_sl['Entry'].apply(lambda x: f"{x:.4f}" if pd.notna(x) else "—")
+    recent_sl['SL_fmt'] = recent_sl['SL'].apply(lambda x: f"{x:.4f}" if pd.notna(x) else "—")
+    
+    st.dataframe(
+        recent_sl[['Time', 'Symbol', 'Side', 'Entry_fmt', 'SL_fmt', 'SL Dist', 'P&L']],
+        use_container_width=True,
+        hide_index=True,
+        height=400,
+        column_config={
+            'Entry_fmt': 'Entry',
+            'SL_fmt': 'SL'
+        }
+    )
+else:
+    st.info("No SL hits yet")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# Bottom Section - Top Performers + Symbols
+col_left, col_right = st.columns([1, 1])
+
+with col_left:
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>🏆 Top Winners</p>", unsafe_allow_html=True)
+    
+    if not completed.empty:
+        winners = completed.nlargest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']].copy()
+        winners['Time'] = winners['Timestamp'].dt.strftime('%b %d')
+        winners['P&L'] = winners['P&L_%'].apply(lambda x: f"+{x:.2f}%")
+        st.dataframe(winners[['Time', 'Symbol', 'Side', 'P&L']], use_container_width=True, hide_index=True, height=320)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with col_right:
+    st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+    st.markdown("<p class='section-title'>📉 Top Losers</p>", unsafe_allow_html=True)
+    
+    if not completed.empty:
+        losers = completed.nsmallest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']].copy()
+        losers['Time'] = losers['Timestamp'].dt.strftime('%b %d')
+        losers['P&L'] = losers['P&L_%'].apply(lambda x: f"{x:.2f}%")
+        st.dataframe(losers[['Time', 'Symbol', 'Side', 'P&L']], use_container_width=True, hide_index=True, height=320)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Top Performing Symbols - Full Width
+st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+st.markdown("<p class='section-title'>💎 Top Performing Symbols</p>", unsafe_allow_html=True)
 
 if not completed.empty:
     symbols = completed.groupby('Symbol').agg({
         'P&L_%': ['sum', 'count'],
         'Result': lambda x: (x.isin(['TP1_HIT', 'TP2_HIT'])).sum()
     }).reset_index()
-    symbols.columns = ['Symbol', 'Total', 'Count', 'Wins']
-    symbols['WR'] = (symbols['Wins'] / symbols['Count'] * 100).round(0)
-    symbols = symbols.sort_values('Total', ascending=False).head(12)
+    symbols.columns = ['Symbol', 'Total_PnL', 'Count', 'Wins']
+    symbols['WR'] = (symbols['Wins'] / symbols['Count'] * 100).round(1)
+    symbols = symbols.sort_values('Total_PnL', ascending=False).head(12)
     
-    colors = ['#10B981' if x > 0 else '#EF4444' for x in symbols['Total']]
+    colors = ['#10b981' if x > 0 else '#ef4444' for x in symbols['Total_PnL']]
     
-    fig4 = go.Figure()
-    fig4.add_trace(go.Bar(
+    fig6 = go.Figure()
+    fig6.add_trace(go.Bar(
         x=symbols['Symbol'],
-        y=symbols['Total'],
-        marker=dict(color=colors, line=dict(color='#1a2332', width=2)),
+        y=symbols['Total_PnL'],
+        marker=dict(color=colors, line=dict(color='#0f172a', width=2)),
         text=symbols['WR'].apply(lambda x: f"{x:.0f}%"),
         textposition='outside',
-        textfont=dict(size=12, color='#CBD5E1', weight=600)
+        textfont=dict(size=11, color='#94a3b8', weight=600),
+        hovertemplate='<b>%{x}</b><br>P&L: %{y:.2f}%<br>WR: ' + symbols['WR'].astype(str) + '%<extra></extra>'
     ))
     
-    fig4.update_layout(
+    fig6.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#F8FAFC', family='Inter'),
-        xaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)'),
-        yaxis=dict(gridcolor='rgba(255, 255, 255, 0.1)', zeroline=True, zerolinecolor='rgba(255, 255, 255, 0.2)'),
+        font=dict(color='#f1f5f9', family='Roboto'),
+        xaxis=dict(gridcolor='rgba(255, 255, 255, 0.08)'),
+        yaxis=dict(
+            title='Total P&L (%)',
+            gridcolor='rgba(255, 255, 255, 0.08)',
+            zeroline=True,
+            zerolinecolor='rgba(255, 255, 255, 0.15)',
+            title_font=dict(size=11, color='#94a3b8')
+        ),
         margin=dict(t=30, b=10, l=10, r=10),
         height=300,
         showlegend=False
     )
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig6, use_container_width=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Recent
-st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-st.markdown("<p class='chart-title'>Recent Signals</p>", unsafe_allow_html=True)
-
-recent = df_filtered.sort_values('Timestamp', ascending=False).head(12)
-recent_display = recent[['Timestamp', 'Symbol', 'Side', 'Entry', 'Confidence', 'Result', 'P&L_%']].copy()
-recent_display['Time'] = recent_display['Timestamp'].dt.strftime('%b %d, %H:%M')
-recent_display['Conf'] = recent_display['Confidence'].apply(lambda x: f"{x:.0f}%" if pd.notna(x) else "—")
-recent_display['P&L'] = recent_display['P&L_%'].apply(lambda x: f"{x:+.2f}%" if pd.notna(x) else "—")
-
-st.dataframe(
-    recent_display[['Time', 'Symbol', 'Side', 'Entry', 'Conf', 'Result', 'P&L']],
-    use_container_width=True,
-    hide_index=True,
-    height=360
-)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ==========================================
-# 🛑 STOP LOSS ANALYSIS SECTION
-# ==========================================
-
-if len(completed) >= 20:  # Only show if enough data
-    st.markdown("---")
-    st.markdown("## 🛑 Stop Loss Analysis")
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # SL KPIs
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Total SL Hits", f"{len(sl_trades)}", f"{len(sl_trades)/len(completed)*100:.1f}% of completed")
-    
-    with col2:
-        median_sl = sl_trades['SL_Distance_%'].median() if not sl_trades.empty else 0
-        st.metric("Median SL Distance", f"{median_sl:.2f}%", "Middle value")
-    
-    with col3:
-        avg_sl_pnl = sl_trades['P&L_%'].mean() if not sl_trades.empty else 0
-        st.metric("Avg SL Loss", f"{avg_sl_pnl:.2f}%", "Per SL trade")
-    
-    with col4:
-        # Calculate optimal range
-        if len(completed) >= 50:
-            completed_copy = completed.copy()
-            completed_copy['SL_Range'] = pd.cut(
-                completed_copy['SL_Distance_%'],
-                bins=[0, 2, 3, 4, 5, 6, 100],
-                labels=['0-2%', '2-3%', '3-4%', '4-5%', '5-6%', '6%+']
-            )
-            
-            range_stats = completed_copy.groupby('SL_Range', observed=True).agg({
-                'Result': [
-                    ('total', 'count'),
-                    ('wins', lambda x: (x.isin(['TP1_HIT', 'TP2_HIT'])).sum())
-                ]
-            }).reset_index()
-            
-            range_stats.columns = ['SL_Range', 'Total', 'Wins']
-            range_stats['Win_Rate'] = (range_stats['Wins'] / range_stats['Total'] * 100)
-            range_stats_filtered = range_stats[range_stats['Total'] >= 10]
-            
-            if not range_stats_filtered.empty:
-                best = range_stats_filtered.loc[range_stats_filtered['Win_Rate'].idxmax()]
-                st.metric("Best SL Range", str(best['SL_Range']), f"{best['Win_Rate']:.1f}% WR")
-            else:
-                st.metric("Best SL Range", "—", "Need more data")
-        else:
-            st.metric("Best SL Range", "—", "Need 50+ trades")
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Charts Row
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-        st.markdown("<p class='chart-title'>🎯 Win Rate by SL Distance Range</p>", unsafe_allow_html=True)
-        
-        if len(completed) >= 50:
-            # Create visualization
-            fig_sl = go.Figure()
-            
-            fig_sl.add_trace(go.Bar(
-                x=range_stats['SL_Range'],
-                y=range_stats['Win_Rate'],
-                marker=dict(
-                    color=range_stats['Win_Rate'],
-                    colorscale='RdYlGn',
-                    showscale=False,
-                    cmin=0,
-                    cmax=100,
-                    line=dict(color='#1a2332', width=2)
-                ),
-                text=range_stats['Win_Rate'].apply(lambda x: f"{x:.1f}%"),
-                textposition='outside',
-                textfont=dict(size=14, color='#F8FAFC', weight=600),
-                hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Trades: %{customdata}<extra></extra>',
-                customdata=range_stats['Total']
-            ))
-            
-            fig_sl.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#F8FAFC', family='Inter'),
-                xaxis=dict(
-                    title='SL Distance Range',
-                    gridcolor='rgba(255, 255, 255, 0.1)',
-                    title_font=dict(size=12, color='#CBD5E1')
-                ),
-                yaxis=dict(
-                    title='Win Rate (%)',
-                    gridcolor='rgba(255, 255, 255, 0.1)',
-                    range=[0, 100],
-                    title_font=dict(size=12, color='#CBD5E1')
-                ),
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=300,
-                showlegend=False
-            )
-            
-            st.plotly_chart(fig_sl, use_container_width=True)
-            
-            # Show best range
-            if not range_stats_filtered.empty and best['Total'] >= 10:
-                improvement = best['Win_Rate'] - win_rate
-                if improvement > 5:
-                    st.success(f"🎯 **Optimal Range:** {best['SL_Range']} achieves **{best['Win_Rate']:.1f}%** Win Rate (+{improvement:.1f}% vs overall)")
-                else:
-                    st.info(f"📊 Best range: {best['SL_Range']} with {best['Win_Rate']:.1f}% Win Rate")
-        else:
-            st.info("📊 Collect 50+ completed trades for detailed SL analysis")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-        st.markdown("<p class='chart-title'>📊 SL Distance: Winners vs Losers</p>", unsafe_allow_html=True)
-        
-        if not completed.empty:
-            import numpy as np
-            
-            winners_sl_dist = tp_trades['SL_Distance_%'].values
-            losers_sl_dist = sl_trades['SL_Distance_%'].values
-            
-            fig_box = go.Figure()
-            
-            fig_box.add_trace(go.Box(
-                y=winners_sl_dist,
-                name='Winners (TP)',
-                marker=dict(color='#10B981'),
-                boxmean='sd'
-            ))
-            
-            fig_box.add_trace(go.Box(
-                y=losers_sl_dist,
-                name='Losers (SL)',
-                marker=dict(color='#EF4444'),
-                boxmean='sd'
-            ))
-            
-            fig_box.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#F8FAFC', family='Inter'),
-                yaxis=dict(
-                    title='SL Distance (%)',
-                    gridcolor='rgba(255, 255, 255, 0.1)',
-                    title_font=dict(size=12, color='#CBD5E1')
-                ),
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=300,
-                showlegend=True,
-                legend=dict(
-                    orientation='h',
-                    yanchor='bottom',
-                    y=1.02,
-                    xanchor='right',
-                    x=1,
-                    font=dict(size=11)
-                )
-            )
-            
-            st.plotly_chart(fig_box, use_container_width=True)
-            
-            # Stats
-            avg_winner_sl = np.mean(winners_sl_dist) if len(winners_sl_dist) > 0 else 0
-            avg_loser_sl = np.mean(losers_sl_dist) if len(losers_sl_dist) > 0 else 0
-            
-            col_a, col_b = st.columns(2)
-            with col_a:
-                st.markdown(f"✅ **Winners:** {avg_winner_sl:.2f}% avg")
-            with col_b:
-                st.markdown(f"❌ **Losers:** {avg_loser_sl:.2f}% avg")
-        else:
-            st.info("No completed trades yet")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Recommendations Box
-    if len(completed) >= 50:
-        st.markdown("<div class='chart-box'>", unsafe_allow_html=True)
-        st.markdown("<p class='chart-title'>💡 Recommendations</p>", unsafe_allow_html=True)
-        
-        current_avg_sl = df['SL_Distance_%'].mean()
-        
-        if not range_stats_filtered.empty:
-            best = range_stats_filtered.loc[range_stats_filtered['Win_Rate'].idxmax()]
-            
-            if best['Win_Rate'] > win_rate + 5:
-                st.markdown(f"""
-**📊 Analysis Summary:**
-- Current Win Rate: **{win_rate:.1f}%**
-- Current Avg SL Distance: **{current_avg_sl:.2f}%**
-- SL Hit Rate: **{len(sl_trades)/len(completed)*100:.1f}%** of completed trades
-
-**🎯 Optimization Opportunity:**
-- Best performing range: **{best['SL_Range']}** 
-- Achieves: **{best['Win_Rate']:.1f}%** Win Rate
-- Improvement: **+{best['Win_Rate'] - win_rate:.1f}%** vs current
-
-**💡 Recommendation:**
-Consider adjusting your SL strategy to target the **{best['SL_Range']}** range for better performance.
-
-**🔧 For 4H Crypto Trading:**
-- If ATR% ≈ 2.0%: Use **1.75× ATR** → ~3.5% SL
-- If ATR% ≈ 2.5%: Use **1.4× ATR** → ~3.5% SL  
-- If ATR% ≈ 4.0%: Use **1.0× ATR** → ~4.0% SL
-
-Update your n8n workflow with dynamic SL multipliers based on ATR for optimal results.
-""")
-            else:
-                st.info(f"📊 Your current SL strategy is performing well. Continue monitoring for optimization opportunities.")
-        else:
-            st.info("📊 Collecting more data to provide optimization recommendations...")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #CBD5E1; font-size: 0.8125rem;'>FlowBot Automation © 2025</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #64748b; font-size: 0.75rem;'>FlowBot Automation © 2025 | Powered by AI</p>", unsafe_allow_html=True)
