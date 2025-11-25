@@ -5,7 +5,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Crypto Signals", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
 
-# CSS with Navy Blue theme
+# CSS with Deep Purple theme
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -17,7 +17,7 @@ st.markdown("""
     #MainMenu, footer, header {visibility: hidden;}
     
     .stApp {
-        background: #0F1729 !important;
+        background: #0D1117 !important;
     }
     
     .main .block-container {
@@ -27,17 +27,17 @@ st.markdown("""
     
     /* Sidebar */
     [data-testid="stSidebar"] {
-        background: #1A2332 !important;
+        background: #161B22 !important;
         width: 80px !important;
         min-width: 80px !important;
-        border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border-right: 1px solid rgba(209, 213, 219, 0.1) !important;
     }
     
     /* Headers */
     h1 {
         font-size: 2rem !important;
         font-weight: 600 !important;
-        color: #FFFFFF !important;
+        color: #F9FAFB !important;
         margin: 0 0 0.5rem 0 !important;
         letter-spacing: -0.02em !important;
     }
@@ -45,7 +45,7 @@ st.markdown("""
     h2 {
         font-size: 0.8125rem !important;
         font-weight: 600 !important;
-        color: #94A3B8 !important;
+        color: #D1D5DB !important;
         text-transform: uppercase !important;
         letter-spacing: 0.1em !important;
         margin: 2.5rem 0 1.25rem 0 !important;
@@ -53,16 +53,16 @@ st.markdown("""
     
     /* Metric cards */
     [data-testid="stMetric"] {
-        background: #1E2A3A !important;
+        background: #1F2937 !important;
         padding: 2rem 1.75rem !important;
         border-radius: 16px !important;
-        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border: 1px solid rgba(209, 213, 219, 0.1) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
         transition: all 0.2s ease !important;
     }
     
     [data-testid="stMetric"]:hover {
-        border-color: rgba(59, 130, 246, 0.4) !important;
+        border-color: rgba(129, 140, 248, 0.4) !important;
         transform: translateY(-3px) !important;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
     }
@@ -70,7 +70,7 @@ st.markdown("""
     [data-testid="stMetricLabel"] {
         font-size: 0.6875rem !important;
         font-weight: 700 !important;
-        color: #94A3B8 !important;
+        color: #D1D5DB !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         margin-bottom: 0.875rem !important;
@@ -79,7 +79,7 @@ st.markdown("""
     [data-testid="stMetricValue"] {
         font-size: 2.5rem !important;
         font-weight: 700 !important;
-        color: #FFFFFF !important;
+        color: #F9FAFB !important;
         line-height: 1.1 !important;
     }
     
@@ -91,10 +91,10 @@ st.markdown("""
     
     /* Chart containers */
     .chart-box {
-        background: #1E2A3A !important;
+        background: #1F2937 !important;
         border-radius: 16px !important;
         padding: 1.75rem !important;
-        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border: 1px solid rgba(209, 213, 219, 0.1) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
         margin-bottom: 1.5rem;
     }
@@ -102,7 +102,7 @@ st.markdown("""
     .chart-title {
         font-size: 0.9375rem;
         font-weight: 600;
-        color: #FFFFFF;
+        color: #F9FAFB;
         margin-bottom: 1.25rem;
         letter-spacing: -0.01em;
     }
@@ -113,33 +113,33 @@ st.markdown("""
     
     /* Dataframes */
     .stDataFrame {
-        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border: 1px solid rgba(209, 213, 219, 0.1) !important;
         border-radius: 12px !important;
-        background: #1E2A3A !important;
+        background: #1F2937 !important;
     }
     
     .stDataFrame thead tr th {
-        background: #1A2332 !important;
-        color: #94A3B8 !important;
+        background: #161B22 !important;
+        color: #D1D5DB !important;
         font-weight: 700 !important;
         font-size: 0.6875rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
         padding: 1rem !important;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border-bottom: 1px solid rgba(209, 213, 219, 0.1) !important;
     }
     
     .stDataFrame tbody tr {
-        background: #1E2A3A !important;
+        background: #1F2937 !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
     }
     
     .stDataFrame tbody tr:hover {
-        background: #1A2332 !important;
+        background: #161B22 !important;
     }
     
     .stDataFrame tbody tr td {
-        color: #FFFFFF !important;
+        color: #F9FAFB !important;
         padding: 0.875rem 1rem !important;
         font-size: 0.875rem !important;
         font-weight: 500 !important;
@@ -147,38 +147,38 @@ st.markdown("""
     
     /* Buttons */
     .stButton button {
-        background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%) !important;
+        background: linear-gradient(135deg, #818CF8 0%, #2DD4BF 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 10px !important;
         padding: 0.75rem 1.5rem !important;
         font-weight: 600 !important;
         font-size: 0.875rem !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4) !important;
     }
     
     /* Select boxes */
     .stSelectbox > div > div,
     .stMultiSelect > div > div {
-        background: #1E2A3A !important;
-        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        background: #1F2937 !important;
+        border: 1px solid rgba(209, 213, 219, 0.1) !important;
         border-radius: 10px !important;
-        color: #FFFFFF !important;
+        color: #F9FAFB !important;
     }
     
     /* Info */
     .stInfo {
-        background: rgba(59, 130, 246, 0.2) !important;
-        border: 1px solid rgba(59, 130, 246, 0.4) !important;
+        background: rgba(129, 140, 248, 0.2) !important;
+        border: 1px solid rgba(129, 140, 248, 0.4) !important;
         border-radius: 10px !important;
-        color: #FFFFFF !important;
+        color: #F9FAFB !important;
     }
     
     /* Divider */
     hr {
         border: none !important;
         height: 1px !important;
-        background: rgba(148, 163, 184, 0.1) !important;
+        background: rgba(209, 213, 219, 0.1) !important;
         margin: 3rem 0 !important;
     }
     
@@ -187,11 +187,11 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar-track {
-        background: #0F1729;
+        background: #0D1117;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: #1E2A3A;
+        background: #1F2937;
         border-radius: 4px;
     }
 </style>
@@ -233,7 +233,7 @@ with col1:
     st.markdown("# Dashboard")
 with col2:
     last = df['Timestamp'].max()
-    st.markdown(f"<p style='color: #94A3B8; font-size: 0.875rem; text-align: right;'>Updated {last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color: #D1D5DB; font-size: 0.875rem; text-align: right;'>Updated {last.strftime('%H:%M')}</p>", unsafe_allow_html=True)
 
 # Filters
 col1, col2, col3 = st.columns([2, 1, 1])
@@ -295,8 +295,8 @@ with col1:
         values=result_counts.values,
         hole=0.6,
         marker=dict(
-            colors=['#3B82F6', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6'],
-            line=dict(color='#0F1729', width=3)
+            colors=['#818CF8', '#4ADE80', '#FB7185', '#FBBF24', '#A78BFA'],
+            line=dict(color='#0D1117', width=3)
         ),
         textfont=dict(size=14, color='white', family='Inter'),
         textposition='outside',
@@ -307,14 +307,14 @@ with col1:
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF', family='Inter'),
+        font=dict(color='#F9FAFB', family='Inter'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280,
         annotations=[dict(
-            text=f'{total}<br><span style="font-size:14px; color:#94A3B8;">signals</span>',
+            text=f'{total}<br><span style="font-size:14px; color:#D1D5DB;">signals</span>',
             x=0.5, y=0.5,
             font_size=32,
-            font_color='#FFFFFF',
+            font_color='#F9FAFB',
             showarrow=False
         )]
     )
@@ -332,10 +332,10 @@ with col2:
     fig2.add_trace(go.Bar(
         x=side_stats['Side'],
         y=side_stats['Count'],
-        marker=dict(color=['#3B82F6', '#06B6D4'], line=dict(color='#0F1729', width=2)),
+        marker=dict(color=['#818CF8', '#2DD4BF'], line=dict(color='#0D1117', width=2)),
         text=side_stats['Count'],
         textposition='outside',
-        textfont=dict(size=14, color='#FFFFFF'),
+        textfont=dict(size=14, color='#F9FAFB'),
         yaxis='y'
     ))
     
@@ -343,16 +343,16 @@ with col2:
         x=side_stats['Side'],
         y=side_stats['Avg_PnL'],
         mode='lines+markers',
-        marker=dict(size=12, color='#10B981', line=dict(color='#FFFFFF', width=2)),
-        line=dict(width=3, color='#10B981'),
+        marker=dict(size=12, color='#4ADE80', line=dict(color='#F9FAFB', width=2)),
+        line=dict(width=3, color='#4ADE80'),
         yaxis='y2'
     ))
     
     fig2.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF', family='Inter'),
-        yaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)', showgrid=True),
+        font=dict(color='#F9FAFB', family='Inter'),
+        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True),
         yaxis2=dict(overlaying='y', side='right'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280,
@@ -378,16 +378,16 @@ if not completed.empty:
         y=daily['Cumulative'],
         mode='lines',
         fill='tozeroy',
-        line=dict(color='#3B82F6', width=2.5),
-        fillcolor='rgba(59, 130, 246, 0.25)'
+        line=dict(color='#818CF8', width=2.5),
+        fillcolor='rgba(129, 140, 248, 0.25)'
     ))
     
     fig3.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF', family='Inter'),
-        xaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)', showgrid=True),
-        yaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)', showgrid=True, zeroline=True, zerolinecolor='rgba(239, 68, 68, 0.4)'),
+        font=dict(color='#F9FAFB', family='Inter'),
+        xaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True),
+        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', showgrid=True, zeroline=True, zerolinecolor='rgba(251, 113, 133, 0.4)'),
         margin=dict(t=10, b=10, l=10, r=10),
         height=280
     )
@@ -437,24 +437,24 @@ if not completed.empty:
     symbols['WR'] = (symbols['Wins'] / symbols['Count'] * 100).round(0)
     symbols = symbols.sort_values('Total', ascending=False).head(12)
     
-    colors = ['#10B981' if x > 0 else '#EF4444' for x in symbols['Total']]
+    colors = ['#4ADE80' if x > 0 else '#FB7185' for x in symbols['Total']]
     
     fig4 = go.Figure()
     fig4.add_trace(go.Bar(
         x=symbols['Symbol'],
         y=symbols['Total'],
-        marker=dict(color=colors, line=dict(color='#0F1729', width=2)),
+        marker=dict(color=colors, line=dict(color='#0D1117', width=2)),
         text=symbols['WR'].apply(lambda x: f"{x:.0f}%"),
         textposition='outside',
-        textfont=dict(size=12, color='#94A3B8')
+        textfont=dict(size=12, color='#D1D5DB')
     ))
     
     fig4.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF', family='Inter'),
-        xaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)'),
-        yaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)', zeroline=True, zerolinecolor='rgba(148, 163, 184, 0.2)'),
+        font=dict(color='#F9FAFB', family='Inter'),
+        xaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)'),
+        yaxis=dict(gridcolor='rgba(209, 213, 219, 0.1)', zeroline=True, zerolinecolor='rgba(209, 213, 219, 0.2)'),
         margin=dict(t=30, b=10, l=10, r=10),
         height=300,
         showlegend=False
@@ -485,4 +485,4 @@ st.dataframe(
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #94A3B8; font-size: 0.8125rem;'>FlowBot Automation © 2025</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #D1D5DB; font-size: 0.8125rem;'>FlowBot Automation © 2025</p>", unsafe_allow_html=True)
