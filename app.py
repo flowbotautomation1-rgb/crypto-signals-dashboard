@@ -6,108 +6,117 @@ from datetime import datetime, timedelta
 
 # הגדרות עמוד
 st.set_page_config(
-    page_title="🚀 Crypto Signals Dashboard",
+    page_title="Crypto Signals Dashboard",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# CSS מתקדם מאוד - Dark Mode עם Neon/Glow Effects
+# CSS מקצועי וקליל
 st.markdown("""
 <style>
-    /* Import fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    /* Import professional font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Reset and global */
+    /* Global reset */
     * {
-        font-family: 'Poppins', sans-serif !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        letter-spacing: -0.01em;
     }
     
-    /* FORCE dark background */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background: #0a0e27 !important;
+    /* Main background */
+    .stApp {
+        background: #0B1120 !important;
     }
     
     .main .block-container {
-        background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%) !important;
-        padding: 2rem 3rem !important;
+        padding: 3rem 4rem !important;
+        max-width: 1600px !important;
     }
     
-    /* Header - FORCE gradient text */
+    /* Remove Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Header */
     h1 {
-        font-size: 2.8rem !important;
-        font-weight: 900 !important;
-        background: linear-gradient(135deg, #00d4ff 0%, #0099ff 50%, #7b2ff7 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        margin-bottom: 1rem !important;
-        filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5)) !important;
+        font-size: 2.25rem !important;
+        font-weight: 600 !important;
+        color: #F8FAFC !important;
+        margin-bottom: 0.5rem !important;
+        letter-spacing: -0.02em !important;
     }
     
     /* Subheaders */
-    h2, h3 {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        margin-top: 2rem !important;
-        margin-bottom: 1rem !important;
-        text-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
+    h2 {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        color: #CBD5E1 !important;
+        margin: 2.5rem 0 1.25rem 0 !important;
+        letter-spacing: -0.01em !important;
     }
     
-    /* METRIC CARDS - Complete override */
+    /* Last update text */
+    .stMarkdown p {
+        font-size: 0.875rem !important;
+        color: #64748B !important;
+        font-weight: 400 !important;
+    }
+    
+    /* METRIC CARDS - Professional design */
     [data-testid="stMetric"] {
-        background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%) !important;
-        padding: 2rem 1.5rem !important;
-        border-radius: 20px !important;
-        border: 2px solid rgba(0, 212, 255, 0.3) !important;
-        box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.6),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1),
-            0 0 40px rgba(0, 212, 255, 0.15) !important;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        backdrop-filter: blur(10px) !important;
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+        padding: 2rem !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.2s ease !important;
     }
     
     [data-testid="stMetric"]:hover {
-        transform: translateY(-8px) scale(1.02) !important;
-        border-color: rgba(0, 212, 255, 0.8) !important;
-        box-shadow: 
-            0 12px 48px rgba(0, 0, 0, 0.8),
-            0 0 60px rgba(0, 212, 255, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(-2px) !important;
     }
     
     [data-testid="stMetricLabel"] {
         font-size: 0.75rem !important;
-        color: #00d4ff !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
+        color: #94A3B8 !important;
         text-transform: uppercase !important;
-        letter-spacing: 2px !important;
-        margin-bottom: 0.5rem !important;
-        text-shadow: 0 0 10px rgba(0, 212, 255, 0.8) !important;
+        letter-spacing: 0.05em !important;
+        margin-bottom: 0.75rem !important;
     }
     
     [data-testid="stMetricValue"] {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
-        color: #00d4ff !important;
-        text-shadow: 
-            0 0 30px rgba(0, 212, 255, 0.8),
-            0 0 60px rgba(0, 212, 255, 0.4) !important;
+        font-size: 2.25rem !important;
+        font-weight: 700 !important;
+        color: #F8FAFC !important;
+        line-height: 1 !important;
         margin: 0.5rem 0 !important;
     }
     
     [data-testid="stMetricDelta"] {
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
-        color: #10b981 !important;
-        text-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        margin-top: 0.5rem !important;
     }
     
-    /* Sidebar - Dark theme */
+    /* Positive delta */
+    [data-testid="stMetricDelta"] svg[fill="#00ff00"] {
+        fill: #10B981 !important;
+    }
+    
+    [data-testid="stMetricDelta"][data-testid*="increase"] {
+        color: #10B981 !important;
+    }
+    
+    /* Sidebar */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0a0e27 0%, #16213e 100%) !important;
-        border-right: 2px solid rgba(0, 212, 255, 0.2) !important;
+        background: #0F172A !important;
+        border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
+        padding-top: 3rem !important;
     }
     
     [data-testid="stSidebar"] > div {
@@ -115,202 +124,163 @@ st.markdown("""
     }
     
     [data-testid="stSidebar"] h2 {
-        color: #00d4ff !important;
-        font-weight: 800 !important;
-        text-shadow: 0 0 20px rgba(0, 212, 255, 0.6) !important;
-        font-size: 1.5rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+        color: #CBD5E1 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        margin-bottom: 1.5rem !important;
     }
     
-    /* Sidebar elements */
     [data-testid="stSidebar"] label {
-        color: #00d4ff !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        color: #94A3B8 !important;
+    }
+    
+    /* Input fields */
+    .stSelectbox > div > div,
+    .stMultiSelect > div > div,
+    .stDateInput > div > div > input {
+        background: #1E293B !important;
+        border: 1px solid rgba(148, 163, 184, 0.15) !important;
+        border-radius: 8px !important;
+        color: #F8FAFC !important;
+        font-size: 0.875rem !important;
+        padding: 0.5rem 0.75rem !important;
     }
     
     /* Buttons */
     .stButton button {
-        background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%) !important;
-        color: #0a0e27 !important;
+        background: #3B82F6 !important;
+        color: white !important;
         border: none !important;
-        border-radius: 15px !important;
-        padding: 0.8rem 2.5rem !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-        box-shadow: 
-            0 6px 20px rgba(0, 212, 255, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-        transition: all 0.3s ease !important;
+        border-radius: 8px !important;
+        padding: 0.625rem 1.25rem !important;
+        font-weight: 500 !important;
+        font-size: 0.875rem !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
     }
     
     .stButton button:hover {
-        background: linear-gradient(135deg, #0099ff 0%, #00d4ff 100%) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 
-            0 8px 30px rgba(0, 212, 255, 0.7),
-            inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-    }
-    
-    /* Select boxes */
-    [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
-        background-color: #1a1f3a !important;
-        border: 2px solid rgba(0, 212, 255, 0.3) !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
-    }
-    
-    /* Multi-select */
-    [data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
-        background-color: #1a1f3a !important;
-        border: 2px solid rgba(0, 212, 255, 0.3) !important;
-        border-radius: 12px !important;
-    }
-    
-    /* Date input */
-    [data-testid="stDateInput"] input {
-        background-color: #1a1f3a !important;
-        border: 2px solid rgba(0, 212, 255, 0.3) !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
+        background: #2563EB !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
     }
     
     /* Dataframes */
     [data-testid="stDataFrame"] {
-        background: #1a1f3a !important;
-        border-radius: 15px !important;
-        border: 2px solid rgba(0, 212, 255, 0.2) !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .stDataFrame {
+        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        border-radius: 8px !important;
         overflow: hidden !important;
     }
     
     /* Dataframe headers */
     .stDataFrame thead tr th {
-        background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%) !important;
-        color: #0a0e27 !important;
-        font-weight: 700 !important;
+        background: #1E293B !important;
+        color: #CBD5E1 !important;
+        font-weight: 600 !important;
+        font-size: 0.75rem !important;
         text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-        padding: 1rem !important;
+        letter-spacing: 0.05em !important;
+        padding: 0.875rem !important;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
     }
     
-    /* Dataframe cells */
+    /* Dataframe rows */
     .stDataFrame tbody tr {
-        background: #1a1f3a !important;
-        border-bottom: 1px solid rgba(0, 212, 255, 0.1) !important;
+        background: #0F172A !important;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.05) !important;
     }
     
     .stDataFrame tbody tr:hover {
-        background: #2d3561 !important;
+        background: #1E293B !important;
     }
     
     .stDataFrame tbody tr td {
-        color: #ffffff !important;
-        padding: 0.8rem !important;
+        color: #CBD5E1 !important;
+        padding: 0.875rem !important;
+        font-size: 0.875rem !important;
     }
     
-    /* Plotly charts */
+    /* Charts container */
     .js-plotly-plot {
-        background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%) !important;
-        border-radius: 20px !important;
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+        border-radius: 12px !important;
         padding: 1.5rem !important;
-        border: 2px solid rgba(0, 212, 255, 0.2) !important;
-        box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.6),
-            0 0 40px rgba(0, 212, 255, 0.1) !important;
+        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+    }
+    
+    /* Info boxes */
+    .stInfo {
+        background: #1E293B !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 8px !important;
+        padding: 1rem !important;
+        color: #CBD5E1 !important;
+    }
+    
+    .stSuccess {
+        background: #1E293B !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        border-radius: 8px !important;
+        padding: 1rem !important;
+        color: #CBD5E1 !important;
     }
     
     /* Divider */
     hr {
         border: none !important;
-        height: 2px !important;
-        background: linear-gradient(90deg, 
-            transparent, 
-            rgba(0, 212, 255, 0.6) 20%, 
-            rgba(0, 212, 255, 0.8) 50%,
-            rgba(0, 212, 255, 0.6) 80%,
-            transparent) !important;
+        height: 1px !important;
+        background: rgba(148, 163, 184, 0.1) !important;
         margin: 3rem 0 !important;
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.4) !important;
-    }
-    
-    /* Info/Success boxes */
-    .stInfo, .stSuccess {
-        background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%) !important;
-        border-left: 4px solid #00d4ff !important;
-        border-radius: 12px !important;
-        padding: 1rem !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    }
-    
-    /* Text colors */
-    p, span, label {
-        color: #e2e8f0 !important;
-    }
-    
-    /* Last update */
-    .main p:first-of-type {
-        color: #00d4ff !important;
-        font-weight: 600 !important;
-        text-shadow: 0 0 10px rgba(0, 212, 255, 0.5) !important;
-    }
-    
-    /* Animations */
-    @keyframes glow {
-        0%, 100% { 
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-        }
-        50% { 
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.8);
-        }
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
     }
     
     /* Scrollbar */
     ::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
+        width: 8px;
+        height: 8px;
     }
     
     ::-webkit-scrollbar-track {
-        background: #0a0e27;
+        background: #0F172A;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-        border-radius: 10px;
-        border: 2px solid #0a0e27;
+        background: #334155;
+        border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #0099ff 0%, #00d4ff 100%);
+        background: #475569;
+    }
+    
+    /* Remove emoji and icon spacing issues */
+    [data-testid="stMetricLabel"]::before {
+        content: '' !important;
+        display: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# טעינת הדאטה
+# טעינת דאטה
 @st.cache_data(ttl=300)
 def load_data():
     try:
         sheet_url = st.secrets.get("GOOGLE_SHEET_URL", None)
-        
         if sheet_url:
             if "/edit" in sheet_url:
                 sheet_url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
                 sheet_url = sheet_url.replace("/edit?usp=sharing", "/export?format=csv")
-            
             df = pd.read_csv(sheet_url)
-            st.sidebar.success("✅ Connected to Google Sheets")
         else:
             df = pd.read_csv('Signals_Log_-_Sheet1.csv')
-            st.sidebar.info("📁 Reading from local file")
-    
     except Exception as e:
-        st.error(f"❌ Error loading data: {str(e)}")
+        st.error(f"Error loading data: {str(e)}")
         st.stop()
     
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
@@ -318,40 +288,33 @@ def load_data():
     df['P&L_%'] = pd.to_numeric(df['P&L_%'], errors='coerce')
     df['Actual_RR'] = pd.to_numeric(df['Actual_RR'], errors='coerce')
     df['Confidence'] = pd.to_numeric(df['Confidence'], errors='coerce')
-    
     return df
 
-try:
-    df = load_data()
-except Exception as e:
-    st.error(f"Cannot load data")
-    st.stop()
+df = load_data()
 
 # Header
-st.markdown('# 🚀 Crypto Trading Signals Dashboard')
-
-# Last update
+st.markdown("# Crypto Trading Signals")
 last_update = df['Timestamp'].max()
-st.markdown(f"**🕐 Last Update:** {last_update.strftime('%d/%m/%Y %H:%M')}")
+st.markdown(f"Last updated {last_update.strftime('%B %d, %Y at %H:%M')}")
 
 # Sidebar
-st.sidebar.markdown("## ⚙️ Filters")
+st.sidebar.markdown("## Filters")
 
 date_range = st.sidebar.date_input(
-    "📅 Date Range",
+    "Date Range",
     value=(df['Timestamp'].min().date(), df['Timestamp'].max().date()),
     min_value=df['Timestamp'].min().date(),
     max_value=df['Timestamp'].max().date()
 )
 
 side_filter = st.sidebar.multiselect(
-    "📊 Direction",
+    "Direction",
     options=['ALL'] + list(df['Side'].unique()),
     default=['ALL']
 )
 
 result_filter = st.sidebar.multiselect(
-    "✅ Result",
+    "Status",
     options=['ALL'] + list(df['Result'].dropna().unique()),
     default=['ALL']
 )
@@ -371,7 +334,7 @@ if 'ALL' not in side_filter and side_filter:
 if 'ALL' not in result_filter and result_filter:
     df_filtered = df_filtered[df_filtered['Result'].isin(result_filter)]
 
-# Metrics
+# Calculate metrics
 completed_signals = df_filtered[df_filtered['Result'].isin(['TP1_HIT', 'TP2_HIT', 'SL_HIT'])]
 total_signals = len(df_filtered)
 completed_count = len(completed_signals)
@@ -385,65 +348,60 @@ win_rate = (wins / completed_count * 100) if completed_count > 0 else 0
 avg_pnl = completed_signals['P&L_%'].mean() if not completed_signals.empty else 0
 total_pnl = completed_signals['P&L_%'].sum() if not completed_signals.empty else 0
 
-# KPIs
-st.markdown("## 📊 Key Performance Indicators")
+# Key metrics
+st.markdown("## Performance Overview")
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("🎯 WIN RATE", f"{win_rate:.1f}%", f"{wins}W / {losses}L")
+    st.metric("Win Rate", f"{win_rate:.1f}%", f"{wins}W / {losses}L")
 
 with col2:
-    st.metric("💰 AVG P&L", f"{avg_pnl:.2f}%", f"Total: {total_pnl:.2f}%")
+    st.metric("Avg P&L", f"{avg_pnl:.2f}%", f"Total: {total_pnl:.2f}%")
 
 with col3:
-    st.metric("📈 TOTAL SIGNALS", total_signals, f"Completed: {completed_count}")
+    st.metric("Total Signals", f"{total_signals:,}", f"Completed: {completed_count}")
 
 with col4:
-    st.metric("⏳ PENDING", pending_count, f"{(pending_count/total_signals*100):.1f}%" if total_signals > 0 else "0%")
+    st.metric("Pending", f"{pending_count:,}", f"{(pending_count/total_signals*100):.1f}%" if total_signals > 0 else "0%")
 
 with col5:
-    st.metric("⌛ EXPIRED", expired_count, f"{(expired_count/total_signals*100):.1f}%" if total_signals > 0 else "0%")
+    st.metric("Expired", f"{expired_count:,}", f"{(expired_count/total_signals*100):.1f}%" if total_signals > 0 else "0%")
 
 st.markdown("---")
 
 # Charts
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.markdown("## 📊 Results Distribution")
+    st.markdown("## Results Distribution")
     result_counts = df_filtered['Result'].value_counts()
     
     fig_results = go.Figure(data=[go.Pie(
         labels=result_counts.index,
         values=result_counts.values,
-        hole=0.65,
+        hole=0.5,
         marker=dict(
-            colors=['#00d4ff', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
-            line=dict(color='#0a0e27', width=3)
+            colors=['#3B82F6', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6'],
+            line=dict(color='#0B1120', width=2)
         ),
-        textfont=dict(size=16, color='white', family='Poppins'),
-        textposition='outside'
+        textfont=dict(size=13, color='white', family='Inter'),
+        textposition='outside',
+        textinfo='label+percent'
     )])
     
     fig_results.update_layout(
-        showlegend=True,
+        showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#ffffff', family='Poppins', size=14),
-        margin=dict(t=10, b=10, l=10, r=10),
-        legend=dict(
-            bgcolor='rgba(26, 31, 58, 0.9)',
-            bordercolor='rgba(0, 212, 255, 0.3)',
-            borderwidth=2,
-            font=dict(size=12)
-        ),
-        height=400
+        font=dict(color='#CBD5E1', family='Inter', size=12),
+        margin=dict(t=20, b=20, l=20, r=20),
+        height=320
     )
     
     st.plotly_chart(fig_results, use_container_width=True)
 
 with col2:
-    st.markdown("## 📈 LONG vs SHORT")
+    st.markdown("## Long vs Short")
     side_stats = df_filtered.groupby('Side').agg({
         'Result': 'count',
         'P&L_%': 'mean'
@@ -453,52 +411,52 @@ with col2:
     fig_side = go.Figure()
     
     fig_side.add_trace(go.Bar(
-        name='Count',
         x=side_stats['Side'],
         y=side_stats['Count'],
-        marker=dict(
-            color=['#00d4ff', '#7b2ff7'],
-            line=dict(color='#ffffff', width=2)
-        ),
+        name='Signal Count',
+        marker=dict(color='#3B82F6', line=dict(color='#0B1120', width=1)),
         text=side_stats['Count'],
         textposition='outside',
-        textfont=dict(size=16, color='#00d4ff'),
         yaxis='y'
     ))
     
     fig_side.add_trace(go.Scatter(
-        name='Avg P&L',
         x=side_stats['Side'],
         y=side_stats['Avg_PnL'],
+        name='Avg P&L %',
         mode='lines+markers',
-        marker=dict(size=18, color='#10b981', line=dict(color='#ffffff', width=3)),
-        line=dict(width=4, color='#10b981'),
+        marker=dict(size=10, color='#10B981'),
+        line=dict(width=2, color='#10B981'),
         yaxis='y2'
     ))
     
     fig_side.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#ffffff', family='Poppins', size=14),
+        font=dict(color='#CBD5E1', family='Inter', size=12),
         yaxis=dict(
             title='Count',
-            gridcolor='rgba(0, 212, 255, 0.15)',
-            title_font=dict(color='#00d4ff')
+            gridcolor='rgba(148, 163, 184, 0.1)',
+            title_font=dict(size=11)
         ),
         yaxis2=dict(
             title='Avg P&L %',
             overlaying='y',
             side='right',
-            gridcolor='rgba(16, 185, 129, 0.15)',
-            title_font=dict(color='#10b981')
+            gridcolor='rgba(148, 163, 184, 0.05)',
+            title_font=dict(size=11)
         ),
         hovermode='x unified',
-        margin=dict(t=10, b=10, l=10, r=10),
-        height=400,
+        margin=dict(t=20, b=20, l=20, r=20),
+        height=320,
         legend=dict(
-            bgcolor='rgba(26, 31, 58, 0.9)',
-            bordercolor='rgba(0, 212, 255, 0.3)',
-            borderwidth=2
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            bgcolor='rgba(0,0,0,0)',
+            font=dict(size=11)
         )
     )
     
@@ -507,7 +465,7 @@ with col2:
 st.markdown("---")
 
 # Performance timeline
-st.markdown("## 📅 Cumulative Performance")
+st.markdown("## Cumulative Performance")
 if not completed_signals.empty:
     daily_pnl = completed_signals.groupby(completed_signals['Check_Date'].dt.date)['P&L_%'].sum().reset_index()
     daily_pnl.columns = ['Date', 'PnL']
@@ -515,39 +473,42 @@ if not completed_signals.empty:
     
     fig_timeline = go.Figure()
     
-    colors = ['#10b981' if x >= 0 else '#ef4444' for x in daily_pnl['Cumulative']]
+    colors = ['#10B981' if x >= 0 else '#EF4444' for x in daily_pnl['Cumulative']]
     
     fig_timeline.add_trace(go.Scatter(
         x=daily_pnl['Date'],
         y=daily_pnl['Cumulative'],
         mode='lines',
         fill='tozeroy',
-        line=dict(color='#00d4ff', width=4),
-        fillcolor='rgba(0, 212, 255, 0.2)'
+        line=dict(color='#3B82F6', width=2),
+        fillcolor='rgba(59, 130, 246, 0.1)',
+        name='Cumulative P&L'
     ))
     
     fig_timeline.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#ffffff', family='Poppins'),
+        font=dict(color='#CBD5E1', family='Inter', size=12),
         xaxis=dict(
-            gridcolor='rgba(0, 212, 255, 0.15)',
-            title_font=dict(color='#00d4ff')
+            gridcolor='rgba(148, 163, 184, 0.1)',
+            title_font=dict(size=11)
         ),
         yaxis=dict(
-            gridcolor='rgba(0, 212, 255, 0.15)',
+            title='Cumulative P&L %',
+            gridcolor='rgba(148, 163, 184, 0.1)',
             zeroline=True,
-            zerolinecolor='#ef4444',
-            zerolinewidth=2,
-            title_font=dict(color='#00d4ff')
+            zerolinecolor='rgba(148, 163, 184, 0.3)',
+            zerolinewidth=1,
+            title_font=dict(size=11)
         ),
-        margin=dict(t=10, b=10, l=10, r=10),
-        height=400
+        margin=dict(t=20, b=20, l=20, r=20),
+        height=320,
+        hovermode='x unified'
     )
     
     st.plotly_chart(fig_timeline, use_container_width=True)
 else:
-    st.info("⏳ No completed signals yet")
+    st.info("No completed signals to display")
 
 st.markdown("---")
 
@@ -555,23 +516,25 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("## 🏆 Top 10 Winners")
+    st.markdown("## Top Winners")
     if not completed_signals.empty:
-        top_winners = completed_signals.nlargest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
-        top_winners['Timestamp'] = top_winners['Timestamp'].dt.strftime('%d/%m %H:%M')
-        st.dataframe(top_winners, use_container_width=True, hide_index=True)
+        top_winners = completed_signals.nlargest(8, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
+        top_winners['Timestamp'] = top_winners['Timestamp'].dt.strftime('%b %d, %H:%M')
+        top_winners['P&L_%'] = top_winners['P&L_%'].apply(lambda x: f"{x:+.2f}%")
+        st.dataframe(top_winners, use_container_width=True, hide_index=True, height=320)
 
 with col2:
-    st.markdown("## ⚠️ Top 10 Losers")
+    st.markdown("## Top Losers")
     if not completed_signals.empty:
-        top_losers = completed_signals.nsmallest(10, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
-        top_losers['Timestamp'] = top_losers['Timestamp'].dt.strftime('%d/%m %H:%M')
-        st.dataframe(top_losers, use_container_width=True, hide_index=True)
+        top_losers = completed_signals.nsmallest(8, 'P&L_%')[['Timestamp', 'Symbol', 'Side', 'P&L_%']]
+        top_losers['Timestamp'] = top_losers['Timestamp'].dt.strftime('%b %d, %H:%M')
+        top_losers['P&L_%'] = top_losers['P&L_%'].apply(lambda x: f"{x:+.2f}%")
+        st.dataframe(top_losers, use_container_width=True, hide_index=True, height=320)
 
 st.markdown("---")
 
 # Symbol performance
-st.markdown("## 💎 Top Symbols")
+st.markdown("## Top Performing Symbols")
 if not completed_signals.empty:
     symbol_stats = completed_signals.groupby('Symbol').agg({
         'P&L_%': ['sum', 'count'],
@@ -582,35 +545,36 @@ if not completed_signals.empty:
     symbol_stats['Win_Rate'] = (symbol_stats['Wins'] / symbol_stats['Count'] * 100).round(1)
     symbol_stats = symbol_stats.sort_values('Total_PnL', ascending=False).head(12)
     
-    colors = ['#10b981' if x > 0 else '#ef4444' for x in symbol_stats['Total_PnL']]
+    colors = ['#10B981' if x > 0 else '#EF4444' for x in symbol_stats['Total_PnL']]
     
     fig_symbols = go.Figure()
     
     fig_symbols.add_trace(go.Bar(
         x=symbol_stats['Symbol'],
         y=symbol_stats['Total_PnL'],
-        marker=dict(
-            color=colors,
-            line=dict(color='#ffffff', width=2)
-        ),
-        text=[f"{wr}%" for wr in symbol_stats['Win_Rate']],
+        marker=dict(color=colors, line=dict(color='#0B1120', width=1)),
+        text=symbol_stats['Win_Rate'].apply(lambda x: f"{x}%"),
         textposition='outside',
-        textfont=dict(size=14, color='#00d4ff')
+        textfont=dict(size=11),
+        hovertemplate='<b>%{x}</b><br>Total P&L: %{y:.2f}%<br>Win Rate: %{text}<extra></extra>'
     ))
     
     fig_symbols.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#ffffff', family='Poppins'),
-        xaxis=dict(gridcolor='rgba(0, 212, 255, 0.15)'),
+        font=dict(color='#CBD5E1', family='Inter', size=12),
+        xaxis=dict(gridcolor='rgba(148, 163, 184, 0.1)'),
         yaxis=dict(
-            gridcolor='rgba(0, 212, 255, 0.15)',
+            title='Total P&L %',
+            gridcolor='rgba(148, 163, 184, 0.1)',
             zeroline=True,
-            zerolinecolor='#ef4444',
-            zerolinewidth=2
+            zerolinecolor='rgba(148, 163, 184, 0.3)',
+            zerolinewidth=1,
+            title_font=dict(size=11)
         ),
-        margin=dict(t=30, b=10, l=10, r=10),
-        height=400
+        margin=dict(t=40, b=20, l=20, r=20),
+        height=360,
+        showlegend=False
     )
     
     st.plotly_chart(fig_symbols, use_container_width=True)
@@ -618,37 +582,33 @@ if not completed_signals.empty:
 st.markdown("---")
 
 # Recent signals
-st.markdown("## 🔄 Recent Signals")
+st.markdown("## Recent Signals")
 recent = df_filtered.sort_values('Timestamp', ascending=False).head(15)
 recent_display = recent[['Timestamp', 'Symbol', 'Side', 'Entry', 'TP1', 'Confidence', 'Result', 'P&L_%']].copy()
-recent_display['Timestamp'] = recent_display['Timestamp'].dt.strftime('%d/%m %H:%M')
-st.dataframe(recent_display, use_container_width=True, hide_index=True)
+recent_display['Timestamp'] = recent_display['Timestamp'].dt.strftime('%b %d, %H:%M')
+recent_display['P&L_%'] = recent_display['P&L_%'].apply(lambda x: f"{x:+.2f}%" if pd.notna(x) else "—")
+recent_display['Confidence'] = recent_display['Confidence'].apply(lambda x: f"{x:.0f}%" if pd.notna(x) else "—")
+st.dataframe(recent_display, use_container_width=True, hide_index=True, height=400)
 
-# Sidebar stats
+# Sidebar quick stats
 st.sidebar.markdown("---")
-st.sidebar.markdown("## 📊 Quick Stats")
+st.sidebar.markdown("## Quick Stats")
 
 if not completed_signals.empty:
     best_symbol = completed_signals.groupby('Symbol')['P&L_%'].sum().idxmax()
     best_pnl = completed_signals.groupby('Symbol')['P&L_%'].sum().max()
-    st.sidebar.metric("🏆 Best", best_symbol, f"{best_pnl:.2f}%")
+    st.sidebar.metric("Best Performer", best_symbol, f"{best_pnl:+.2f}%")
 
-if st.sidebar.button("🔄 Refresh"):
+if st.sidebar.button("Refresh Data"):
     st.cache_data.clear()
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.info("🔄 Auto-refresh: 5 min")
+st.sidebar.caption("Data refreshes every 5 minutes")
 
 # Footer
 st.markdown("---")
-st.markdown("""
-<div style='text-align: center; padding: 2rem;'>
-    <p style='color: #00d4ff; font-weight: 700; font-size: 1.1rem; margin: 0;'>
-        Made with ❤️ by FlowBot Automation
-    </p>
-    <p style='color: #94a3b8; margin: 0.5rem 0 0 0;'>
-        Real-time Crypto Trading Analytics
-    </p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    "<p style='text-align: center; color: #64748B; font-size: 0.875rem;'>Built by FlowBot Automation</p>",
+    unsafe_allow_html=True
+)
